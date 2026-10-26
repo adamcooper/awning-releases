@@ -3,198 +3,447 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Awning — warm and dim your Mac's screen</title>
-<meta name="description" content="Warm your Mac's screen down to pure red. Dim it below the keyboard's floor. Stop the backlight from flickering.">
+<title>Awning: warm and dim your Mac's screen</title>
+<meta name="description" content="A free menu-bar app for macOS. Warm your screen all the way to red, dim it below the brightness keys, and keep the backlight from flickering.">
+<meta name="theme-color" content="#EAF0F4">
 <meta property="og:title" content="Awning">
-<meta property="og:description" content="Warm your Mac's screen down to pure red. Dim it below the keyboard's floor. Stop the backlight from flickering.">
-<meta property="og:url" content="https://adamcooper.github.io/awning-releases/">
-<meta property="og:image" content="https://adamcooper.github.io/awning-releases/images/social-preview.png">
+<meta property="og:description" content="Warm your Mac's screen all the way to red. Dim it below the brightness keys. Keep the backlight from flickering.">
+<meta property="og:url" content="https://awning.forged.run/">
+<meta property="og:image" content="https://awning.forged.run/images/social-preview.png">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://awning.forged.run/">
 <link rel="icon" href="images/icon.png">
 <!--
-  The landing page. Replaces the redirect that stood here after site/ was
-  deleted: a GitHub repo is a poor first impression for the non-technical,
-  non-English audience this app is localised for, and reaching the DMG from
-  the repo took four clicks.
+  The marketing page, served by GitHub Pages from adamcooper/awning-releases
+  at awning.forged.run (docs/CNAME). One self-contained file on purpose: no
+  framework, no build step, no web fonts or third-party requests, so the
+  page keeps the same "nothing is sent anywhere" promise as the app
+  (CLAUDE.md §12, §4.2).
 
-  One self-contained file on purpose — no framework, no build step, no
-  dependency (CLAUDE.md §12). The Uzbek and Russian copy is recovered from
-  the deleted Astro site, which the maintainer wrote; the strings added for
-  this page still need the same fluent review docs/QA.md tracks.
+  English only for now (maintainer decision 2026-10-26); the Uzbek and
+  Russian copy of the previous page is in git history for the follow-up.
 
-  Language is chosen from navigator.language, overridable by ?lang= or the
-  switcher, and every section is in the HTML so it works without JS.
+  Every claim here must match docs/QA.md. In particular: flicker-free mode
+  is hedged because some panels modulate at full brightness, and the
+  macOS 26 note says only dimming below 30% survives Apple's colour-table
+  bug (CLAUDE.md §3.3).
+
+  The demo uses the app's own warmth curve, ported from
+  Awning/Display/WarmthCurve.swift, and a multiply blend, which is what the
+  gamma table does to each encoded channel value. Keep the two in step.
 -->
 <style>
-  :root { color-scheme: light dark; --fg:#111; --dim:#666; --line:#e3e3e3; --bg:#fff; --accent:#e8502a; --warnbg:#fff8e6; --warnline:#f0d9a0; }
-  @media (prefers-color-scheme: dark) {
-    :root { --fg:#eee; --dim:#9a9a9a; --line:#2c2c2c; --bg:#151515; --warnbg:#2a2415; --warnline:#4a3f22; }
+  :root {
+    color-scheme: light dark;
+    --daylight: #EAF0F4; --ink: #1A2230; --slate: #566273;
+    --ember: #C9301E; --amber: #F2A541; --dusk: #1F2438;
+    --bg: var(--daylight); --fg: var(--ink); --muted: var(--slate);
+    --rule: #C9D3DB; --panel: #FFFFFF;
+    --head: "Avenir Next Condensed", "Avenir Next", "Arial Narrow", system-ui, sans-serif;
+    --body: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg);
-    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    -webkit-font-smoothing:antialiased; }
-  .wrap { max-width:720px; margin:0 auto; padding:28px 22px 72px; }
-  nav { display:flex; gap:6px; justify-content:flex-end; margin-bottom:30px; }
-  nav button { font:inherit; font-size:14px; padding:5px 11px; border:1px solid var(--line);
-    background:none; color:var(--dim); border-radius:99px; cursor:pointer; }
-  nav button[aria-current="true"] { color:var(--fg); border-color:var(--fg); }
-  h1 { font-size:31px; line-height:1.25; letter-spacing:-.02em; margin:0 0 14px; }
-  h2 { font-size:20px; margin:44px 0 12px; }
-  h3 { font-size:15px; margin:0 0 5px; }
-  .lead { font-size:17px; color:var(--dim); margin:0 0 26px; }
-  .cta-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:0 0 26px; }
-  .cta { display:inline-block; background:var(--accent); color:#fff; text-decoration:none;
-    font-weight:600; font-size:16px; padding:13px 26px; border-radius:10px; }
-  .cta:hover { filter:brightness(1.08); }
-  .req { font-size:13px; color:var(--dim); }
-  .x-unused { background:var(--warnbg); border:1px solid var(--warnline); border-radius:10px;
-    padding:13px 16px; font-size:14px; margin:0 0 28px; }
-  .warn p { margin:5px 0 0; color:var(--fg); }
-  .shots { display:flex; gap:14px; flex-wrap:wrap; margin:0 0 8px; }
-  .shots img { width:calc(50% - 7px); min-width:210px; border:1px solid var(--line); border-radius:12px; }
-  .feats { display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:22px; margin:34px 0 0; }
-  .f p { margin:0; font-size:14px; color:var(--dim); }
-  .firstrun { border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:0 0 26px; }
-  .firstrun p { margin:0 0 9px; font-size:14px; }
-  .cmd { display:flex; gap:9px; align-items:center; background:rgba(128,128,128,.13);
-    border-radius:8px; padding:9px 11px; }
-  .cmd code { flex:1; overflow-x:auto; white-space:nowrap; }
-  .copy { font:inherit; font-size:13px; padding:5px 11px; border:1px solid var(--line);
-    background:var(--bg); color:var(--fg); border-radius:6px; cursor:pointer; flex:none; }
-  .copy:hover { border-color:var(--fg); }
-  .note { font-size:13px; color:var(--dim); margin:14px 0 0; }
-  .steps li { margin-bottom:12px; }
-  pre { background:rgba(128,128,128,.13); padding:11px 13px; border-radius:8px;
-    overflow-x:auto; margin:9px 0 0; }
-  code { font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
-  .foot { margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
-    font-size:14px; color:var(--dim); }
-  a { color:var(--accent); }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: var(--dusk); --fg: #E6EAF0; --muted: #A2ABBA; --rule: #363C55; --panel: #2A3049; }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-underline-offset: .18em; }
+  a:hover { color: var(--ember); }
+  :focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
+  h1, h2, h3 { font-family: var(--head); font-stretch: condensed; font-weight: 600; line-height: 1.08; margin: 0; }
+  h1 { font-size: clamp(42px, 7vw, 76px); letter-spacing: -.01em; }
+  h2 { font-size: clamp(30px, 4.4vw, 44px); margin-bottom: 18px; }
+  h3 { font-size: 23px; margin-bottom: 6px; }
+  p { margin: 0 0 14px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .measure { max-width: 66ch; }
+
+  /* The valance: awning stripes with a scalloped lower edge. */
+  .valance { height: 34px;
+    background: repeating-linear-gradient(90deg, var(--ember) 0 28px, var(--daylight) 28px 56px);
+    -webkit-mask: linear-gradient(#000 0 20px, transparent 0) top / 100% 100% no-repeat,
+                  radial-gradient(circle 14px at 14px 20px, #000 96%, transparent) 0 0 / 28px 34px repeat-x;
+            mask: linear-gradient(#000 0 20px, transparent 0) top / 100% 100% no-repeat,
+                  radial-gradient(circle 14px at 14px 20px, #000 96%, transparent) 0 0 / 28px 34px repeat-x; }
+  @media (prefers-color-scheme: dark) {
+    .valance { background: repeating-linear-gradient(90deg, var(--ember) 0 28px, #E6EAF0 28px 56px); }
+  }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 0; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none;
+    font: 600 26px/1 var(--head); font-stretch: condensed; }
+  .brand img { width: 30px; height: 30px; }
+  .toplink { font-weight: 600; font-size: 15px; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; padding: 56px 0 72px; }
+  @media (min-width: 920px) { .hero { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: center; } }
+  .lead { font-size: 20px; color: var(--muted); margin: 22px 0 30px; max-width: 34ch; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; }
+  .cta { display: inline-block; background: var(--ember); color: #fff; text-decoration: none;
+    font: 600 18px/1 var(--body); padding: 17px 28px; border-radius: 12px; }
+  .cta:hover { color: #fff; background: #B02716; }
+  .req { font-size: 15px; color: var(--muted); }
+  .soon { display: inline-block; margin-top: 22px; font-size: 14px; font-weight: 600;
+    padding: 6px 13px; border: 1.5px solid var(--rule); border-radius: 99px; color: var(--muted); }
+
+  /* The demo: a mock screen under a multiply layer, plus the app's controls. */
+  .demo { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: stretch; }
+  .screen { position: relative; isolation: isolate; border-radius: 14px; overflow: hidden;
+    border: 9px solid #12151E; aspect-ratio: 4 / 3; background: #fff; color: #1A2230; }
+  .scene { position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 74% 64%, #FFE7A8 0 7%, #FFB04A 7.5% 9%, transparent 9.5%),
+      linear-gradient(#9CC6EE, #D3E6F6 58%, #F7D3A4 70%);
+  }
+  .hills { position: absolute; left: 0; right: 0; bottom: 0; height: 34%;
+    background: radial-gradient(120% 90% at 20% 100%, #2E8A4C 60%, transparent 61%),
+                radial-gradient(110% 80% at 85% 100%, #47A65E 60%, transparent 61%); }
+  .doc { position: absolute; left: 7%; top: 9%; width: 60%; background: #fff; border-radius: 8px;
+    padding: 14px 16px 16px; box-shadow: 0 6px 18px rgba(18, 21, 30, .25); font-size: 12px; line-height: 1.45; }
+  .doc b { display: block; font: 600 17px/1.15 var(--head); font-stretch: condensed; margin-bottom: 6px; }
+  .doc p { margin: 0 0 8px; color: #3D4757; }
+  .swatches { display: flex; gap: 5px; }
+  .swatches i { flex: 1; height: 14px; border-radius: 3px; }
+  .tint { position: absolute; inset: 0; mix-blend-mode: multiply; pointer-events: none; background: #fff; }
+  .shot { position: absolute; right: -6px; bottom: -14px; width: 34%; background: #fff; padding: 6px 6px 4px;
+    border-radius: 6px; box-shadow: 0 8px 22px rgba(18, 21, 30, .35); transform: rotate(3deg); z-index: 2; }
+  .shot .mini { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 3px; }
+  .shot .mini .doc { font-size: 4px; padding: 4px 5px; box-shadow: none; }
+  .shot .mini .doc b { font-size: 6px; margin-bottom: 2px; }
+  .shot .mini .doc p { margin-bottom: 2px; }
+  .shot .mini .swatches i { height: 4px; }
+  .shot span { display: block; font-size: 11px; color: #3D4757; padding: 4px 2px 0; line-height: 1.3; }
+  .screen-wrap { position: relative; }
+
+  .controls { display: flex; flex-direction: column; gap: 12px; width: 168px; padding: 14px;
+    border-radius: 16px; background: var(--panel); border: 1px solid var(--rule); }
+  .faders { display: flex; justify-content: space-around; }
+  .fader { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .fader label { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .fader output { font: 600 15px/1 var(--body); font-variant-numeric: tabular-nums; }
+  .fader input { writing-mode: vertical-lr; direction: rtl; height: 150px; width: 28px; margin: 0;
+    accent-color: var(--ember); cursor: pointer; }
+  .presets { display: flex; gap: 4px; }
+  .presets button, .power { font: 600 11px/1 var(--body); border: 1px solid var(--rule); background: none;
+    color: var(--fg); border-radius: 7px; padding: 8px 0; flex: 1; cursor: pointer; }
+  .presets button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .power { font-size: 14px; padding: 11px 0; background: var(--ember); color: #fff; border-color: var(--ember); }
+  .power[aria-pressed="false"] { background: none; color: var(--fg); border-color: var(--rule); }
+  .demo-note { grid-column: 1 / -1; font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+  @media (max-width: 560px) {
+    .demo { grid-template-columns: minmax(0, 1fr); }
+    .controls { width: auto; }
+  }
+
+  /* Sections */
+  section.band { padding: 80px 0; border-top: 1px solid var(--rule); }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 36px 56px; margin-top: 38px; }
+  .features p { color: var(--muted); margin: 0; }
+  kbd { font: 600 14px/1 var(--body); padding: 2px 6px; border: 1px solid var(--rule); border-radius: 5px; }
+
+  .flicker { background: var(--dusk); color: #E6EAF0; border-top: 0; }
+  .flicker .muted { color: #A2ABBA; }
+  .flicker a:hover { color: var(--amber); }
+  .waves { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; margin: 36px 0 28px; }
+  .waves figure { margin: 0; }
+  .waves svg { width: 100%; height: auto; display: block; }
+  .waves figcaption { font-size: 15px; color: #A2ABBA; margin-top: 10px; }
+  .waves figcaption b { color: #E6EAF0; display: block; font-size: 17px; }
+
+  .privacy h2 { font-size: clamp(36px, 6vw, 60px); max-width: 16ch; }
+  .privacy .measure p { font-size: 19px; color: var(--muted); }
+
+  .platforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; margin-top: 34px; }
+  .platform { padding: 26px 26px 24px; border: 1px solid var(--rule); border-radius: 16px; background: var(--panel); }
+  .platform h3 { font-size: 30px; }
+  .platform .req { margin: 4px 0 18px; display: block; }
+  .platform.later { background: none; border-style: dashed; }
+  .small { font-size: 15px; color: var(--muted); }
+
+  details { border-bottom: 1px solid var(--rule); padding: 16px 0; max-width: 72ch; }
+  details:first-of-type { border-top: 1px solid var(--rule); }
+  summary { cursor: pointer; font-weight: 600; font-size: 18px; list-style-position: outside; }
+  details p { color: var(--muted); margin: 10px 0 0; }
+
+  footer { padding: 40px 0 56px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--muted); }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 8px; }
+
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 </style>
 </head>
 <body>
+<div class="valance" aria-hidden="true"></div>
 <div class="wrap">
-  <nav id="langnav">
-    <button data-l="en" type="button">English</button>
-    <button data-l="uz" type="button">O‘zbekcha</button>
-    <button data-l="ru" type="button">Русский</button>
-  </nav>
-  <section class="lang" id="en" lang="en" hidden>
-    <h1>Warm your Mac's screen down to pure red. Dim it below the keyboard's floor. Stop the backlight from flickering.</h1>
-    <p class="lead">A menu-bar app for macOS. Two sliders, three presets, one button. No account, no tracking, no subscription.</p>
-    <p class="cta-row">
-      <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.6/Awning-0.6.dmg">Download for Mac</a>
-      <span class="req">Requires macOS 13 Ventura or later, Apple silicon or Intel. · v0.6 beta</span>
-    </p>
-    <div class="firstrun"><p>Not notarised by Apple yet. Drag <b>Awning</b> to <b>Applications</b>, then run this once in Terminal:</p><div class="cmd"><code>xattr -dr com.apple.quarantine /Applications/Awning.app</code><button type="button" class="copy" data-copied="Copied">Copy</button></div></div>
-    <div class="shots">
-      <img src="images/popover-off.png" alt="Awning off" loading="lazy" onerror="this.remove()">
-      <img src="images/popover-on.png" alt="Awning on at 2700K" loading="lazy" onerror="this.remove()">
-    </div>
-    <div class="feats">
-      <div class="f"><h3>Warmth, all the way to 0K</h3><p>Night Shift stops around 2500K and f.lux around 1900K. Awning goes to a pure red \"0K\" — a name, not a physical temperature — by rewriting the display's colour tables, so the tint is applied by the graphics hardware itself.</p></div>
-      <div class="f"><h3>Dimmer than the keys allow</h3><p>The brightness keys stop at the panel's minimum. Awning dims in software from 100% down to 10%, on every connected display, with one slider.</p></div>
-      <div class="f"><h3>PWM-Safe mode</h3><p>Many LED backlights dim by switching on and off very fast (PWM), which some people notice as flicker or strain. PWM-Safe keeps the backlight at 100% and does all dimming in software instead, so the backlight never pulses.</p></div>
-      <div class="f"><h3>Screenshots stay normal</h3><p>Because the tint lives in the display's colour tables, screenshots, screen recordings and screen shares show the real colours at any brightness. Verified with screenshots, QuickTime and Zoom.</p></div>
-      <div class="f"><h3>Sunset to sunrise</h3><p>Warms up at sunset and turns itself off at sunrise, computed on your Mac from your city or, if you allow it once, your location. Nothing is sent anywhere. Fixed times work too.</p></div>
-      <div class="f"><h3>Uzbek, Russian, English</h3><p>The whole app in three languages, switchable without a restart.</p></div>
-    </div>
-    <h2>Install</h2>
-    <ol class="steps">
-      <li>Open the DMG and drag <b>Awning</b> to <b>Applications</b>.</li>
-      <li>This beta is not notarised yet, so macOS will refuse to open it. Paste this into Terminal:<pre><code>xattr -dr com.apple.quarantine /Applications/Awning.app</code></pre></li>
-      <li>Then open Awning. It lives in the <b>menu bar</b> — there is no Dock icon.</li>
-    </ol>
-    <p class="note">If colours don’t change on <b>macOS 26</b>, turn off automatic brightness in System Settings → Displays — an Apple bug (FB22273730) affects some Macs. Dimming and PWM-Safe work regardless.</p>
-    <p class="foot">Free. Based on <a href="https://github.com/azakapro/dimit">Dimit</a> by Azizullo Temirov (MIT licence).</p>
-  </section>
-  <section class="lang" id="uz" lang="uz" hidden>
-    <h1>Mac ekranini to‘liq qizil ranggacha iliqlashtiring. Klaviatura chegarasidan ham pastroq xiralashtiring. Orqa yoritish miltillashini to‘xtating.</h1>
-    <p class="lead">macOS uchun menyu paneli ilovasi. Ikki slayder, uch rejim, bitta tugma. Akkaunt yo‘q, kuzatuv yo‘q, obuna yo‘q.</p>
-    <p class="cta-row">
-      <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.6/Awning-0.6.dmg">Mac uchun yuklab olish</a>
-      <span class="req">macOS 13 Ventura yoki undan yangisi kerak, Apple silicon yoki Intel. · v0.6 beta</span>
-    </p>
-    <div class="firstrun"><p>Hali Apple tomonidan notarizatsiya qilinmagan. <b>Awning</b> ni <b>Applications</b> ga sudrang, so‘ng Terminalda bir marta bajaring:</p><div class="cmd"><code>xattr -dr com.apple.quarantine /Applications/Awning.app</code><button type="button" class="copy" data-copied="Nusxalandi">Nusxalash</button></div></div>
-    <div class="shots">
-      <img src="images/popover-off.png" alt="Awning off" loading="lazy" onerror="this.remove()">
-      <img src="images/popover-on.png" alt="Awning on at 2700K" loading="lazy" onerror="this.remove()">
-    </div>
-    <div class="feats">
-      <div class="f"><h3>Iliqlik — 0K gacha</h3><p>Night Shift taxminan 2500K da, f.lux esa 1900K da to‘xtaydi. Awning displeyning rang jadvallarini qayta yozib, to‘liq qizil «0K» gacha boradi (bu nom, fizik harorat emas) — rang o‘zgarishini grafika uskunasining o‘zi bajaradi.</p></div>
-      <div class="f"><h3>Tugmalar ruxsat berganidan ham xiraroq</h3><p>Yorqinlik tugmalari panelning minimumida to‘xtaydi. Awning yorqinlikni dasturiy ravishda 100% dan 10% gacha, barcha ulangan displeylarda, bitta slayder bilan pasaytiradi.</p></div>
-      <div class="f"><h3>PWM-xavfsiz rejim</h3><p>Ko‘p LED orqa yoritishlar juda tez yonib-o‘chish (PWM) orqali xiralashadi; ba’zilar buni miltillash yoki charchoq sifatida sezadi. PWM-xavfsiz rejim orqa yoritishni 100% da ushlab, xiralashtirishni dasturiy bajaradi — orqa yoritish umuman pulslamaydi.</p></div>
-      <div class="f"><h3>Skrinshotlar oddiy qoladi</h3><p>Rang displeyning rang jadvallarida bo‘lgani uchun, istalgan yorqinlikda skrinshotlar, ekran yozuvlari va ekran ulashishlari haqiqiy ranglarni ko‘rsatadi. Skrinshot, QuickTime va Zoom bilan tekshirilgan.</p></div>
-      <div class="f"><h3>Quyosh botishidan chiqishigacha</h3><p>Quyosh botganda iliqlashadi, chiqqanda o‘zini o‘chiradi — shahringiz yoki (bir marta ruxsat bersangiz) joylashuvingiz asosida Mac’ingizning o‘zida hisoblanadi. Hech narsa hech qayerga yuborilmaydi. Belgilangan vaqtlar ham ishlaydi.</p></div>
-      <div class="f"><h3>O‘zbek, rus, ingliz</h3><p>Butun ilova uch tilda, qayta ishga tushirmasdan almashtiriladi.</p></div>
-    </div>
-    <h2>O‘rnatish</h2>
-    <ol class="steps">
-      <li>DMG faylni oching va <b>Awning</b> ni <b>Applications</b> ga sudrang.</li>
-      <li>Bu beta hali notarizatsiya qilinmagan, shuning uchun macOS uni ochishdan bosh tortadi. Terminalga buni joylashtiring:<pre><code>xattr -dr com.apple.quarantine /Applications/Awning.app</code></pre></li>
-      <li>So‘ng Awning ni oching. U <b>menyu panelida</b> turadi — Dock belgisi yo‘q.</li>
-    </ol>
-    <p class="note"><b>macOS 26</b> da ranglar o‘zgarmasa, Tizim sozlamalari → Displeylar bo‘limida avtomatik yorqinlikni o‘chiring — Apple xatosi (FB22273730) ba’zi Mac’larga ta’sir qiladi. Xiralashtirish va PWM-xavfsiz rejim baribir ishlaydi.</p>
-    <!-- TODO(i18n): needs review by an Uzbek speaker -->
-    <p class="foot">Bepul. Azizullo Temirovning <a href="https://github.com/azakapro/dimit">Dimit</a> ilovasi asosida (MIT litsenziyasi).</p>
-  </section>
-  <section class="lang" id="ru" lang="ru" hidden>
-    <h1>Сделайте экран Mac тёплым вплоть до чистого красного. Затемните ниже предела клавиш. Остановите мерцание подсветки.</h1>
-    <p class="lead">Приложение для строки меню macOS. Два ползунка, три режима, одна кнопка. Без аккаунта, без слежки, без подписки.</p>
-    <p class="cta-row">
-      <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.6/Awning-0.6.dmg">Скачать для Mac</a>
-      <span class="req">Требуется macOS 13 Ventura или новее, Apple silicon или Intel. · v0.6 бета</span>
-    </p>
-    <div class="firstrun"><p>Пока не нотаризовано Apple. Перетащите <b>Awning</b> в <b>Applications</b>, затем один раз выполните в Терминале:</p><div class="cmd"><code>xattr -dr com.apple.quarantine /Applications/Awning.app</code><button type="button" class="copy" data-copied="Скопировано">Копировать</button></div></div>
-    <div class="shots">
-      <img src="images/popover-off.png" alt="Awning off" loading="lazy" onerror="this.remove()">
-      <img src="images/popover-on.png" alt="Awning on at 2700K" loading="lazy" onerror="this.remove()">
-    </div>
-    <div class="feats">
-      <div class="f"><h3>Теплота — до 0K</h3><p>Night Shift останавливается около 2500K, f.lux — около 1900K. Awning доходит до чистого красного «0K» (это название, а не физическая температура), переписывая цветовые таблицы дисплея, так что оттенок накладывает сама графическая система.</p></div>
-      <div class="f"><h3>Темнее, чем позволяют клавиши</h3><p>Клавиши яркости упираются в минимум панели. Awning затемняет программно от 100% до 10%, на каждом подключённом дисплее, одним ползунком.</p></div>
-      <div class="f"><h3>Режим без мерцания (PWM)</h3><p>Многие LED-подсветки затемняются, очень быстро включаясь и выключаясь (ШИМ, PWM); некоторые воспринимают это как мерцание или напряжение. Режим без мерцания держит подсветку на 100% и затемняет программно — подсветка не пульсирует.</p></div>
-      <div class="f"><h3>Скриншоты остаются обычными</h3><p>Оттенок живёт в цветовых таблицах дисплея, поэтому скриншоты, записи экрана и демонстрация экрана показывают настоящие цвета при любой яркости. Проверено скриншотами, QuickTime и Zoom.</p></div>
-      <div class="f"><h3>От заката до рассвета</h3><p>Теплеет на закате и выключается на рассвете — вычисляется на вашем Mac по городу или, если вы один раз разрешите, по местоположению. Ничего никуда не отправляется. Заданное время тоже работает.</p></div>
-      <div class="f"><h3>Узбекский, русский, английский</h3><p>Всё приложение на трёх языках, переключение без перезапуска.</p></div>
-    </div>
-    <h2>Установка</h2>
-    <ol class="steps">
-      <li>Откройте DMG и перетащите <b>Awning</b> в <b>Applications</b>.</li>
-      <li>Эта бета ещё не нотаризована, поэтому macOS откажется её открыть. Вставьте это в Терминал:<pre><code>xattr -dr com.apple.quarantine /Applications/Awning.app</code></pre></li>
-      <li>Затем откройте Awning. Он живёт в <b>строке меню</b> — значка в Dock нет.</li>
-    </ol>
-    <p class="note">Если на <b>macOS 26</b> цвета не меняются, отключите автояркость в Системных настройках → Дисплеи — ошибка Apple (FB22273730) затрагивает некоторые Mac. Затемнение и режим без мерцания работают в любом случае.</p>
-    <!-- TODO(i18n): needs review by a Russian speaker -->
-    <p class="foot">Бесплатно. Основано на <a href="https://github.com/azakapro/dimit">Dimit</a> Азизулло Темирова (лицензия MIT).</p>
-  </section>
+  <header class="top">
+    <a class="brand" href="./"><img src="images/icon.png" alt="" width="30" height="30">Awning</a>
+    <a class="toplink" href="#get">Download</a>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="h1">
+      <div>
+        <h1 id="h1">Warm your Mac's screen all the way to red.</h1>
+        <p class="lead">Awning is a small menu-bar app. One slider takes the blue out of the screen, the other dims it below where the brightness keys stop. Free, with no account.</p>
+        <div class="cta-row">
+          <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.6/Awning-0.6.dmg">Download for Mac</a>
+          <span class="req">macOS 13 or later, version 0.6</span>
+        </div>
+        <span class="soon">Android coming soon</span>
+      </div>
+
+      <div class="demo" id="demo">
+        <div class="screen-wrap">
+          <div class="screen" aria-hidden="true">
+            <div class="scene"><div class="hills"></div></div>
+            <div class="doc">
+              <b>Tonight's plan</b>
+              <p>Finish the chapter, answer two emails, then put the laptop away by eleven.</p>
+              <div class="swatches"><i style="background:#2F6FDE"></i><i style="background:#2FA65A"></i><i style="background:#F2C230"></i><i style="background:#E0453A"></i></div>
+            </div>
+            <div class="tint" id="tint"></div>
+          </div>
+          <div class="shot" aria-hidden="true">
+            <div class="mini">
+              <div class="scene"><div class="hills"></div></div>
+              <div class="doc">
+                <b>Tonight's plan</b>
+                <p>Finish the chapter, answer two emails, then put the laptop away by eleven.</p>
+                <div class="swatches"><i style="background:#2F6FDE"></i><i style="background:#2FA65A"></i><i style="background:#F2C230"></i><i style="background:#E0453A"></i></div>
+              </div>
+            </div>
+            <span>A screenshot taken now</span>
+          </div>
+        </div>
+
+        <div class="controls" role="group" aria-label="Try Awning">
+          <div class="faders">
+            <div class="fader">
+              <output id="kOut" for="warmth">6500K</output>
+              <input id="warmth" type="range" min="0" max="6500" step="50" value="6500" aria-label="Warmth">
+              <label for="warmth">Warmth</label>
+            </div>
+            <div class="fader">
+              <output id="bOut" for="bright">100%</output>
+              <input id="bright" type="range" min="10" max="100" step="1" value="100" aria-label="Brightness">
+              <label for="bright">Brightness</label>
+            </div>
+          </div>
+          <div class="presets">
+            <button type="button" data-k="4000" data-b="100" aria-pressed="false">DAY</button>
+            <button type="button" data-k="2700" data-b="80" aria-pressed="false">EVENING</button>
+            <button type="button" data-k="0" data-b="40" aria-pressed="false">NIGHT</button>
+          </div>
+          <button type="button" class="power" id="power" aria-pressed="true">ON</button>
+        </div>
+        <p class="demo-note">Try it: this is the app's own warmth curve, applied to the picture on the left. Your real screen changes the same way, and your screenshots stay normal.</p>
+      </div>
+    </section>
+  </main>
 </div>
+
+<section class="band" aria-labelledby="what">
+  <div class="wrap">
+    <h2 id="what">Two sliders, three presets, one button</h2>
+    <p class="measure small">Everything else lives behind a settings gear.</p>
+    <div class="features">
+      <div>
+        <h3>Warmth down to 0K</h3>
+        <p>Go from ordinary white through candlelight to a screen that is only red. Awning calls that end 0K. It's a name, not a real temperature: at 0K only the red part of each pixel is left.</p>
+      </div>
+      <div>
+        <h3>Dimmer than the keys allow</h3>
+        <p>Brightness goes from 100% down to 10%, past the lowest setting of the brightness keys, on every connected display at once.</p>
+      </div>
+      <div>
+        <h3>Screenshots stay normal</h3>
+        <p>The colour change happens in the display's own colour tables, so screenshots, screen recordings and screen shares keep their real colours. We checked with screenshots, QuickTime and Zoom.</p>
+      </div>
+      <div>
+        <h3>Sunset to sunrise</h3>
+        <p>Let Awning warm up in the evening and switch itself off in the morning. Sunset is worked out on your Mac from your city, or from your location if you allow it. Fixed times work too.</p>
+      </div>
+      <div>
+        <h3>Keyboard shortcuts</h3>
+        <p>Turn Awning on and off with <kbd>⌃⌥⌘Z</kbd>, and set your own keys for the presets, warmth and brightness.</p>
+      </div>
+      <div>
+        <h3>Starts with your Mac</h3>
+        <p>Awning sits in the menu bar, not the Dock, and can open at login so your evening setting is ready when you are.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band flicker" aria-labelledby="fl">
+  <div class="wrap">
+    <h2 id="fl">Dimming without the flicker</h2>
+    <div class="measure">
+      <p>Many screens dim by switching their backlight on and off hundreds or thousands of times a second. You can't see it directly, but some people notice it as flicker or tired eyes.</p>
+    </div>
+    <div class="waves">
+      <figure>
+        <svg viewBox="0 0 300 90" role="img" aria-label="A backlight pulsing on and off">
+          <line x1="0" y1="80" x2="300" y2="80" stroke="#4A5170" stroke-width="1"/>
+          <path d="M0 80 H10 V14 H30 V80 H60 V14 H80 V80 H110 V14 H130 V80 H160 V14 H180 V80 H210 V14 H230 V80 H260 V14 H280 V80 H300" fill="none" stroke="#F2A541" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+        <figcaption><b>Dimmed with the brightness keys</b>The backlight pulses, and is fully off between pulses.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 300 90" role="img" aria-label="A backlight holding steady">
+          <line x1="0" y1="80" x2="300" y2="80" stroke="#4A5170" stroke-width="1"/>
+          <path d="M0 14 H300" fill="none" stroke="#F2A541" stroke-width="3"/>
+        </svg>
+        <figcaption><b>Dimmed with flicker-free mode</b>The backlight stays at 100%, and Awning darkens the picture instead.</figcaption>
+      </figure>
+    </div>
+    <div class="measure muted">
+      <p>Flicker-free mode works on built-in Mac screens and Apple displays, and experimentally on one external monitor that supports DDC/CI. Some panels still pulse even at full brightness, so it can't promise zero flicker on every screen. Holding the backlight at 100% uses a little more battery.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band privacy" aria-labelledby="pv">
+  <div class="wrap">
+    <h2 id="pv">Awning doesn't go online.</h2>
+    <div class="measure">
+      <p>No account, no analytics, no tracking, nothing that identifies you. The only time Awning connects to the internet is to check for updates, and only if you turn that on or choose Check for Updates yourself.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="get" aria-labelledby="gt">
+  <div class="wrap">
+    <h2 id="gt">Get Awning</h2>
+    <div class="platforms">
+      <div class="platform">
+        <h3>Mac</h3>
+        <span class="req">macOS 13 Ventura or later, Apple silicon or Intel. Free.</span>
+        <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.6/Awning-0.6.dmg">Download for Mac</a>
+        <p class="small" style="margin-top:20px">Open the download, drag Awning to Applications, then open it. It's signed and notarised by Apple, so it opens like any other app. Look for it in the menu bar at the top of the screen.</p>
+      </div>
+      <div class="platform later">
+        <h3>Android</h3>
+        <span class="soon" style="margin-top:6px">Coming soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="faq">
+  <div class="wrap">
+    <h2 id="faq">Questions</h2>
+    <details>
+      <summary>Is it really free?</summary>
+      <p>Yes. There's no trial, no licence key and no paid tier. Every copy does everything.</p>
+    </details>
+    <details>
+      <summary>Where is Awning after I open it?</summary>
+      <p>In the menu bar at the top right of your screen, not in the Dock. Click its icon to open the sliders.</p>
+    </details>
+    <details>
+      <summary>The colours don't change on macOS 26. Why?</summary>
+      <p>A bug in macOS 26 makes some Macs ignore the colour tables that Awning and similar apps use. Turning off automatic brightness in System Settings, then Displays, helps on many of them. On an affected Mac, flicker-free mode and dimming below 30% still work.</p>
+    </details>
+    <details>
+      <summary>Can I use it with Night Shift or f.lux?</summary>
+      <p>Use one at a time. They change the same colours, so running two at once gives unpredictable results. Turn Night Shift off while Awning is on.</p>
+    </details>
+    <details>
+      <summary>Does it work with external monitors?</summary>
+      <p>Warmth and dimming work on every connected display. Flicker-free mode needs an Apple display, or a monitor that supports DDC/CI with the experimental setting turned on.</p>
+    </details>
+    <details>
+      <summary>What happens when I quit?</summary>
+      <p>Your screen goes straight back to its normal colours, and so does the backlight. If Awning ever crashes, opening it again restores the colours.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Awning is free. It's based on <a href="https://github.com/azakapro/dimit">Dimit</a> by Azizullo Temirov, under the MIT licence.</p>
+    <nav aria-label="Footer">
+      <a href="https://github.com/adamcooper/awning-releases/issues">Report a bug</a>
+      <a href="https://github.com/adamcooper/awning-releases/releases">All releases</a>
+    </nav>
+  </div>
+</footer>
+
 <script>
-  var LANGS = ["en", "uz", "ru"];
-  function show(l) {
-    if (LANGS.indexOf(l) < 0) l = "en";
-    LANGS.forEach(function (x) { document.getElementById(x).hidden = (x !== l); });
-    document.documentElement.lang = l;
-    Array.prototype.forEach.call(document.querySelectorAll("#langnav button"), function (b) {
-      b.setAttribute("aria-current", String(b.dataset.l === l));
-    });
-    try { localStorage.setItem("awning-lang", l); } catch (e) {}
+  // Ported from Awning/Display/WarmthCurve.swift: Kim et al. 2002
+  // Planckian locus, sRGB D65 matrix, normalised to 6500K, smoothstep
+  // to pure red below 2000K.
+  function linear(k) {
+    var t = Math.min(25000, Math.max(1667, k)), t1 = 1e3 / t, t2 = t1 * t1, t3 = t2 * t1;
+    var x = t <= 4000 ? -0.2661239 * t3 - 0.2343589 * t2 + 0.8776956 * t1 + 0.179910
+                      : -3.0258469 * t3 + 2.1070379 * t2 + 0.2226347 * t1 + 0.240390;
+    var x2 = x * x, x3 = x2 * x, y;
+    if (t <= 2222) y = -1.1063814 * x3 - 1.34811020 * x2 + 2.18555832 * x - 0.20219683;
+    else if (t <= 4000) y = -0.9549476 * x3 - 1.37418593 * x2 + 2.09137015 * x - 0.16748867;
+    else y = 3.0817580 * x3 - 5.87338670 * x2 + 3.75112997 * x - 0.37001483;
+    var X = x / y, Z = (1 - x - y) / y;
+    return [3.2406 * X - 1.5372 - 0.4986 * Z, -0.9689 * X + 1.8758 + 0.0415 * Z, 0.0557 * X - 0.2040 + 1.0570 * Z];
   }
-  var q = new URLSearchParams(location.search).get("lang");
-  var saved = null; try { saved = localStorage.getItem("awning-lang"); } catch (e) {}
-  show(q || saved || (navigator.language || "en").slice(0, 2));
-  document.addEventListener("click", function (ev) {
-    var b = ev.target.closest(".copy"); if (!b) return;
-    var code = b.parentNode.querySelector("code").textContent;
-    var done = function () { var o = b.textContent; b.textContent = b.dataset.copied;
-      setTimeout(function () { b.textContent = o; }, 1600); };
-    if (navigator.clipboard) { navigator.clipboard.writeText(code).then(done, function () {}); }
+  var WHITE = linear(6500);
+  function clamp(v) { return Math.min(1, Math.max(0, v)); }
+  function norm(k) { var c = linear(k); return c.map(function (v, i) { return clamp(v / WHITE[i]); }); }
+  function rgb(k) {
+    k = Math.min(6500, Math.max(0, k));
+    if (k >= 2000) return norm(k);
+    var s = norm(2000), u = clamp(1 - k / 2000), t = u * u * (3 - 2 * u);
+    return [s[0] + (1 - s[0]) * t, s[1] * (1 - t), s[2] * (1 - t)];
+  }
+
+  var warmth = document.getElementById("warmth"), bright = document.getElementById("bright");
+  var kOut = document.getElementById("kOut"), bOut = document.getElementById("bOut");
+  var tint = document.getElementById("tint"), power = document.getElementById("power");
+  var presets = document.querySelectorAll(".presets button");
+  var on = true, anim = null;
+
+  function render() {
+    var k = +warmth.value, b = +bright.value;
+    kOut.textContent = k + "K"; bOut.textContent = b + "%";
+    warmth.setAttribute("aria-valuetext", k + "K"); bright.setAttribute("aria-valuetext", b + "%");
+    var m = on ? rgb(k).map(function (v) { return Math.round(v * b / 100 * 255); }) : [255, 255, 255];
+    tint.style.background = "rgb(" + m.join(",") + ")";
+    presets.forEach(function (p) {
+      p.setAttribute("aria-pressed", String(on && +p.dataset.k === k && +p.dataset.b === b));
+    });
+  }
+
+  function glide(k, b, ms) {
+    cancelAnimationFrame(anim);
+    var k0 = +warmth.value, b0 = +bright.value, start = null;
+    if (!ms || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      warmth.value = k; bright.value = b; return render();
+    }
+    function step(now) {
+      if (start === null) start = now;
+      var p = Math.min(1, (now - start) / ms), e = p * p * (3 - 2 * p);
+      warmth.value = Math.round((k0 + (k - k0) * e) / 50) * 50;
+      bright.value = Math.round(b0 + (b - b0) * e);
+      render();
+      if (p < 1) anim = requestAnimationFrame(step);
+    }
+    anim = requestAnimationFrame(step);
+  }
+
+  [warmth, bright].forEach(function (el) {
+    el.addEventListener("input", function () { cancelAnimationFrame(anim); if (!on) { on = true; syncPower(); } render(); });
   });
-  document.getElementById("langnav").addEventListener("click", function (ev) {
-    var b = ev.target.closest("button"); if (b) show(b.dataset.l);
+  presets.forEach(function (p) {
+    p.addEventListener("click", function () { if (!on) { on = true; syncPower(); } glide(+p.dataset.k, +p.dataset.b, 600); });
   });
+  function syncPower() { power.setAttribute("aria-pressed", String(on)); power.textContent = on ? "ON" : "OFF"; }
+  power.addEventListener("click", function () { on = !on; syncPower(); render(); });
+
+  render();
+  // The page's one unprompted motion: settle into EVENING once, so a visitor
+  // sees the screen warm before touching anything.
+  setTimeout(function () { if (+warmth.value === 6500) glide(2700, 80, 1600); }, 700);
+
 </script>
-<noscript><style>.lang{display:block!important}.lang[hidden]{display:block!important}nav{display:none}</style></noscript>
 </body>
 </html>
