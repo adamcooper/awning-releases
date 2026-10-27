@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What the research says about screen light · Awning</title>
+<meta name="description" content="What scientific studies say about screen colour and brightness during the day, in the evening and at night, and how Awning's presets follow from them.">
+<meta name="theme-color" content="#EAF0F4">
+<meta property="og:title" content="What the research says about screen light">
+<meta property="og:description" content="What studies show, and don't show, about warm and dim screens by time of day.">
+<meta property="og:url" content="https://awning.forged.run/research.html">
+<meta property="og:image" content="https://awning.forged.run/images/social-preview.png">
+<link rel="canonical" href="https://awning.forged.run/research.html">
+<link rel="icon" href="images/icon.png">
+<!--
+  The evidence page. Same rules as index.html: one self-contained file, no
+  framework, no web fonts, no third-party requests (CLAUDE.md §12, §4.2).
+
+  Every claim here must be backed by docs/LIGHT_RESEARCH.md, which records
+  each source's verified DOI/PMID and the evidence strength. No medical
+  claims in any form (CLAUDE.md §1.7): describe what studies found, never
+  what Awning does to anyone's health. The estimates table is a calculation,
+  not a measurement, and must stay labelled as one.
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --daylight: #EAF0F4; --ink: #1A2230; --slate: #566273;
+    --ember: #C9301E; --amber: #F2A541; --dusk: #1F2438;
+    --bg: var(--daylight); --fg: var(--ink); --muted: var(--slate);
+    --rule: #C9D3DB; --panel: #FFFFFF;
+    --head: "Avenir Next Condensed", "Avenir Next", "Arial Narrow", system-ui, sans-serif;
+    --body: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: var(--dusk); --fg: #E6EAF0; --muted: #A2ABBA; --rule: #363C55; --panel: #2A3049; }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-underline-offset: .18em; }
+  a:hover { color: var(--ember); }
+  :focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
+  h1, h2, h3 { font-family: var(--head); font-stretch: condensed; font-weight: 600; line-height: 1.08; margin: 0; }
+  h1 { font-size: clamp(38px, 6vw, 64px); letter-spacing: -.01em; }
+  h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 18px; }
+  h3 { font-size: 23px; margin-bottom: 6px; }
+  p { margin: 0 0 14px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .measure { max-width: 68ch; }
+  .muted, .small { color: var(--muted); }
+  .small { font-size: 15px; }
+
+  .valance { height: 34px;
+    background: repeating-linear-gradient(90deg, var(--ember) 0 28px, var(--daylight) 28px 56px);
+    -webkit-mask: linear-gradient(#000 0 20px, transparent 0) top / 100% 100% no-repeat,
+                  radial-gradient(circle 14px at 14px 20px, #000 96%, transparent) 0 0 / 28px 34px repeat-x;
+            mask: linear-gradient(#000 0 20px, transparent 0) top / 100% 100% no-repeat,
+                  radial-gradient(circle 14px at 14px 20px, #000 96%, transparent) 0 0 / 28px 34px repeat-x; }
+  @media (prefers-color-scheme: dark) {
+    .valance { background: repeating-linear-gradient(90deg, var(--ember) 0 28px, #E6EAF0 28px 56px); }
+  }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 0; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none;
+    font: 600 26px/1 var(--head); font-stretch: condensed; }
+  .brand img { width: 30px; height: 30px; }
+  .toplink { font-weight: 600; font-size: 15px; }
+
+  .intro { padding-top: 56px; padding-bottom: 56px; }
+  .lead { font-size: 20px; color: var(--muted); margin: 20px 0 0; max-width: 52ch; }
+  section.band { padding: 64px 0; border-top: 1px solid var(--rule); }
+
+  .short { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 14px; max-width: 72ch; }
+  .short li { padding-left: 22px; position: relative; }
+  .short li::before { content: ""; position: absolute; left: 0; top: .62em; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--ember); }
+
+  table { border-collapse: collapse; width: 100%; max-width: 820px; margin: 18px 0 8px; font-size: 16px; }
+  th, td { text-align: left; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scroll { overflow-x: auto; }
+
+  .presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-top: 30px; }
+  .preset { padding: 24px 24px 20px; border: 1px solid var(--rule); border-radius: 16px; background: var(--panel); }
+  .preset .chip { display: inline-block; font: 600 13px/1 var(--body); letter-spacing: .04em;
+    padding: 7px 11px; border-radius: 8px; margin-bottom: 14px; color: #1A2230; }
+  .preset p { color: var(--muted); }
+  .preset p.verdict { color: var(--fg); font-weight: 600; margin-bottom: 8px; }
+
+  .grade { display: inline-block; font: 600 12px/1 var(--body); padding: 4px 8px; border-radius: 99px;
+    border: 1.5px solid var(--rule); color: var(--muted); white-space: nowrap; }
+
+  .notlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 28px 48px; margin-top: 30px; }
+  .notlist p { color: var(--muted); margin: 0; }
+
+  .night { background: var(--dusk); color: #E6EAF0; border-top: 0; }
+  .night .muted, .night p.muted { color: #A2ABBA; }
+  .night a:hover { color: var(--amber); }
+
+  ol.refs { padding-left: 1.4em; max-width: 90ch; font-size: 15px; color: var(--muted); }
+  ol.refs li { margin-bottom: 8px; }
+  ol.refs li:target { color: var(--fg); background: color-mix(in srgb, var(--amber) 22%, transparent); }
+  a.cite { text-decoration: none; border-bottom: 1px dotted currentColor; }
+
+  footer { padding: 40px 0 56px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--muted); }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="valance" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./"><img src="images/icon.png" alt="" width="30" height="30">Awning</a>
+    <a class="toplink" href="./#get">Download</a>
+  </header>
+</div>
+
+<main>
+<div class="wrap intro">
+  <h1>What the research says about screen light</h1>
+  <p class="lead">We read the studies on screen colour and brightness by time of day. Here's what they show, what they don't, and how Awning's day, evening and night presets follow from them.</p>
+  <ul class="short">
+    <li><b>What matters most is how much blue-green light reaches your eyes.</b> Researchers call it melanopic light. In the evening, more of it means melatonin, the hormone that rises before sleep, comes later and lower (<a class="cite" href="#r-brown2022">Brown 2022</a>, <a class="cite" href="#r-schollhorn2023">Schöllhorn 2023</a>).</li>
+    <li><b>Warmth and brightness work together.</b> Warming a screen on its own removes only about half of that light. Dimming it too removes far more (<a class="cite" href="#r-brown2022">Brown 2022</a>, <a class="cite" href="#r-nagare2019">Nagare 2019</a>).</li>
+    <li><b>During the day, there's no reason to warm your screen.</b> Daytime light should be bright, and it mostly comes from daylight and room lights, not your screen (<a class="cite" href="#r-brown2022">Brown 2022</a>).</li>
+    <li><b>Red light at night has the least of it.</b> In lab studies, red light didn't lower melatonin. It still isn't completely without effect (<a class="cite" href="#r-figueiro2009">Figueiro 2009</a>, <a class="cite" href="#r-homien2014">Ho Mien 2014</a>).</li>
+    <li><b>Some popular claims don't hold up.</b> Studies have not shown that warm screens improve sleep in everyday life, or that filtering blue light reduces eye strain (<a class="cite" href="#r-duraccio2021">Duraccio 2021</a>, <a class="cite" href="#r-singh2023">Cochrane 2023</a>).</li>
+  </ul>
+</div>
+
+<section class="band" aria-labelledby="why">
+  <div class="wrap">
+    <h2 id="why">Why light in the evening matters</h2>
+    <div class="measure">
+      <p>Besides the cells you see with, your eyes have cells that tell your body clock whether it's day. They're most sensitive to blue-green light, around 480 nanometres (<a class="cite" href="#r-brainard2001">Brainard 2001</a>, <a class="cite" href="#r-lockley2003">Lockley 2003</a>). Scientists measure the light that reaches them as <b>melanopic light</b>, in lux, using an international standard (<a class="cite" href="#r-cie2018">CIE S 026</a>).</p>
+      <p>In the evening, it takes surprisingly little. In one study, ordinary room light before bed delayed melatonin in almost everyone (<a class="cite" href="#r-gooley2011">Gooley 2011</a>). In another, the most sensitive people reacted strongly to just 10 lux, about the light of a dim lamp. People's sensitivity varied more than fifty-fold (<a class="cite" href="#r-phillips2019">Phillips 2019</a>).</p>
+      <p>Screens count. Reading on a bright tablet for four hours before bed lowered melatonin by about half and pushed it about an hour and a half later, compared with reading a printed book (<a class="cite" href="#r-chang2015">Chang 2015</a>). In a study of 72 people, the effect on melatonin and on how long people took to fall asleep followed the amount of melanopic light from the screen, not how bright it looked (<a class="cite" href="#r-schollhorn2023">Schöllhorn 2023</a>).</p>
+      <p>In 2022, eighteen experts in the field published recommendations for healthy adults (<a class="cite" href="#r-brown2022">Brown 2022</a>).</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">When</th><th scope="col">Recommended melanopic light at the eye</th></tr></thead>
+        <tbody>
+          <tr><td>Daytime</td><td class="num">at least 250 lux, ideally from daylight</td></tr>
+          <tr><td>Evening, from 3 hours before bed</td><td class="num">at most 10 lux</td></tr>
+          <tr><td>While sleeping</td><td class="num">as dark as possible, at most 1 lux</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="measure small">These targets are for all the light reaching your eyes, from the room as well as the screen. Awning can't measure that, and it doesn't claim to meet them. They're meant for adults aged 18 to 55 with ordinary daytime schedules, not shift workers, children or older people.</p>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="both">
+  <div class="wrap">
+    <h2 id="both">Warmth alone isn't enough</h2>
+    <div class="measure">
+      <p>A screen sends out a mix of light. Warming it takes out blue and some green. Dimming it takes out a share of everything. The two multiply, so it helps to do both.</p>
+      <p>Warming on its own does less than people expect. The 2022 recommendations put the gain from changing a screen's colour alone at about half (<a class="cite" href="#r-brown2022">Brown 2022</a>). On an iPad at full brightness, Night Shift's warmest setting didn't lower melatonin significantly more than its coolest one, and the researchers suggested dimming the screen as well (<a class="cite" href="#r-nagare2019">Nagare 2019</a>). In a week-long trial with 167 young adults, Night Shift made no measurable difference to sleep (<a class="cite" href="#r-duraccio2021">Duraccio 2021</a>).</p>
+      <p>Bigger changes do show up. Light from the red end of the spectrum disturbed sleep and melatonin less than blue light (<a class="cite" href="#r-green2017">Green 2017</a>). Researchers measuring tablets and phones recommended a bedtime mode that both shifts colour toward red and lowers the backlight (<a class="cite" href="#r-gringras2015">Gringras 2015</a>). That's what Awning's evening and night presets do.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="presets">
+  <div class="wrap">
+    <h2 id="presets">How the three presets follow from this</h2>
+    <p class="measure muted">Each preset is a starting point. Right-click one in the app to save your own look there.</p>
+    <div class="presets">
+      <div class="preset">
+        <span class="chip" style="background:#FFE9C9">DAY · 4000K · 100%</span>
+        <p class="verdict">A light warm tint, if you like one.</p>
+        <p>The research gives no reason to warm your screen during the day. Bright days seem to make you less sensitive to light in the evening (<a class="cite" href="#r-hebert2002">Hébert 2002</a>, <a class="cite" href="#r-rangtell2016">Rångtell 2016</a>), and that light comes from windows and room lights, not the screen. Most people find a display white of about 5,400–7,300K the most natural (<a class="cite" href="#r-choi2016">Choi 2016</a>, <a class="cite" href="#r-li2026">Li 2026</a>). DAY is there for people who prefer a softer screen. Turning Awning off during the day is just as good.</p>
+        <span class="grade">Evidence: none for warming by day</span>
+      </div>
+      <div class="preset">
+        <span class="chip" style="background:#FFC27A">EVENING · 2700K · 80%</span>
+        <p class="verdict">Warm, and a little dimmer.</p>
+        <p>This is the part of the day that research supports most clearly. Evening screen light lowers and delays melatonin, and the effect grows with the amount of melanopic light (<a class="cite" href="#r-chang2015">Chang 2015</a>, <a class="cite" href="#r-schollhorn2023">Schöllhorn 2023</a>). Since warmth alone only goes about halfway, take Brightness lower too if your room is dim or your screen is bright. Experts suggest starting about three hours before bed (<a class="cite" href="#r-brown2022">Brown 2022</a>), which Awning's sunset schedule can do for you.</p>
+        <span class="grade">Evidence: strong in the lab, mixed for sleep</span>
+      </div>
+      <div class="preset">
+        <span class="chip" style="background:#E2483A;color:#fff">NIGHT · 0K · 40%</span>
+        <p class="verdict">Red only, and dim.</p>
+        <p>Red light hardly reaches the body clock's sensors. In lab studies, red light didn't lower melatonin at all (<a class="cite" href="#r-figueiro2009">Figueiro 2009</a>, <a class="cite" href="#r-homien2014">Ho Mien 2014</a>). After a bright screen, your eyes need time to adjust to a dark room. In one study, red light didn't cause that delay, but white and blue did (<a class="cite" href="#r-mayr2010">Mayr 2010</a>). Red light isn't completely without effect, though: it can make you more alert (<a class="cite" href="#r-figueiro2009">Figueiro 2009</a>, <a class="cite" href="#r-sahin2013">Sahin 2013</a>), and in one study it shifted the body clock of some people (<a class="cite" href="#r-homien2014">Ho Mien 2014</a>). At night, darker is still better. No study has yet tested a red computer screen itself.</p>
+        <span class="grade">Evidence: moderate, from lab studies</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band night" aria-labelledby="est">
+  <div class="wrap">
+    <h2 id="est">Our rough numbers</h2>
+    <div class="measure">
+      <p class="muted">We estimated how much melanopic light each preset leaves, using the international standard (<a class="cite" href="#r-cie2018">CIE S 026</a>) and measured colour spectra of typical LCD and CRT screens. <b style="color:#E6EAF0">These are calculations, not measurements of a Mac.</b> A real screen may differ.</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">Setting</th><th scope="col">Melanopic light left, compared with a plain white screen</th></tr></thead>
+        <tbody>
+          <tr><td>Awning off</td><td class="num">100%</td></tr>
+          <tr><td>DAY</td><td class="num">about 55–60%</td></tr>
+          <tr><td>EVENING</td><td class="num">about 15–20%</td></tr>
+          <tr><td>NIGHT</td><td class="num">well under 1%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="measure">
+      <p class="muted">A laptop showing a white page at full brightness, about half a metre away, gives roughly 100 lux or more of melanopic light. By our estimate, EVENING brings that worst case down to about 20 lux, still above the 10 lux the experts suggest, and NIGHT to well under 1 lux. Ordinary pages are darker than plain white, so most of the time the real numbers are lower.</p>
+      <p class="muted">The names on the warmth slider, such as 2700K, describe the colour Awning aims for. They aren't a measured colour temperature of your screen.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="not">
+  <div class="wrap">
+    <h2 id="not">What the research doesn't show</h2>
+    <p class="measure muted">Some claims made for warm screens go further than the evidence. Awning doesn't make them.</p>
+    <div class="notlist">
+      <div>
+        <h3>That night modes improve sleep</h3>
+        <p>Lab studies show clear effects on melatonin. Studies of sleep in everyday life are mixed, and several found no difference (<a class="cite" href="#r-duraccio2021">Duraccio 2021</a>, <a class="cite" href="#r-blume2022">Blume 2022</a>, <a class="cite" href="#r-rangtell2016">Rångtell 2016</a>, <a class="cite" href="#r-shechter2020">Shechter 2020</a>).</p>
+      </div>
+      <div>
+        <h3>That less blue light means less eye strain</h3>
+        <p>A Cochrane review and several blinded trials found that filtering blue light didn't reduce eye strain (<a class="cite" href="#r-singh2023">Cochrane 2023</a>, <a class="cite" href="#r-palavets2019">Palavets 2019</a>, <a class="cite" href="#r-vera2022">Vera 2022</a>). Eye doctors suggest matching screen brightness to the room and taking breaks (<a class="cite" href="#r-aao">AAO</a>).</p>
+      </div>
+      <div>
+        <h3>That screens damage your eyes</h3>
+        <p>The blue light from a screen measured well under 1% of the international safety limit, far less than a clear sky (<a class="cite" href="#r-ohagan2016">O'Hagan 2016</a>). Awning doesn't protect your eyes from harm, because screens aren't harming them.</p>
+      </div>
+      <div>
+        <h3>That one setting suits everyone</h3>
+        <p>Sensitivity to evening light varies more than fifty-fold between people (<a class="cite" href="#r-phillips2019">Phillips 2019</a>), and comfort is personal. Treat the presets as starting points.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="flk">
+  <div class="wrap">
+    <h2 id="flk">About flicker</h2>
+    <div class="measure">
+      <p>Many screens dim by pulsing the backlight. Flicker from old fluorescent office lights, at 100 times a second, was linked to headaches and eye strain in a careful study (<a class="cite" href="#r-wilkins1989">Wilkins 1989</a>). Much faster flicker can't be seen directly, but some people notice it when their eyes move, even at several thousand pulses a second (<a class="cite" href="#r-roberts2013">Roberts 2013</a>, <a class="cite" href="#r-brown2020">Brown 2020</a>).</p>
+      <p>For screens specifically, the evidence is thin. The one controlled study we found, on phones, found no difference in eye fatigue between pulsed and steady dimming (<a class="cite" href="#r-wu2023">Wu 2023</a>). Flicker-free mode is for people who know they're sensitive to flicker. It isn't a treatment for anything.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="refs">
+  <div class="wrap">
+    <h2 id="refs">Sources</h2>
+    <p class="measure small">We checked every reference against its publisher's record. Links open the paper's DOI or PubMed page.</p>
+    <ol class="refs">
+      <li id="r-brown2022">Brown TM, Brainard GC, Cajochen C, et al. Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults. <i>PLoS Biology</i> 2022;20(3):e3001571. <a href="https://doi.org/10.1371/journal.pbio.3001571">doi:10.1371/journal.pbio.3001571</a></li>
+      <li id="r-cie2018">CIE S 026/E:2018. CIE system for metrology of optical radiation for ipRGC-influenced responses to light. <a href="https://doi.org/10.25039/S026.2018">doi:10.25039/S026.2018</a></li>
+      <li id="r-brainard2001">Brainard GC, Hanifin JP, Greeson JM, et al. Action spectrum for melatonin regulation in humans. <i>Journal of Neuroscience</i> 2001;21(16):6405–6412. <a href="https://doi.org/10.1523/JNEUROSCI.21-16-06405.2001">doi:10.1523/JNEUROSCI.21-16-06405.2001</a></li>
+      <li id="r-lockley2003">Lockley SW, Brainard GC, Czeisler CA. High sensitivity of the human circadian melatonin rhythm to resetting by short wavelength light. <i>Journal of Clinical Endocrinology &amp; Metabolism</i> 2003;88(9):4502–4505. <a href="https://doi.org/10.1210/jc.2003-030570">doi:10.1210/jc.2003-030570</a></li>
+      <li id="r-gooley2011">Gooley JJ, Chamberlain K, Smith KA, et al. Exposure to room light before bedtime suppresses melatonin onset and shortens melatonin duration in humans. <i>Journal of Clinical Endocrinology &amp; Metabolism</i> 2011;96(3):E463–E472. <a href="https://doi.org/10.1210/jc.2010-2098">doi:10.1210/jc.2010-2098</a></li>
+      <li id="r-phillips2019">Phillips AJK, Vidafar P, Burns AC, et al. High sensitivity and interindividual variability in the response of the human circadian system to evening light. <i>PNAS</i> 2019;116(24):12019–12024. <a href="https://doi.org/10.1073/pnas.1901824116">doi:10.1073/pnas.1901824116</a></li>
+      <li id="r-chang2015">Chang AM, Aeschbach D, Duffy JF, Czeisler CA. Evening use of light-emitting eReaders negatively affects sleep, circadian timing, and next-morning alertness. <i>PNAS</i> 2015;112(4):1232–1237. <a href="https://doi.org/10.1073/pnas.1418490112">doi:10.1073/pnas.1418490112</a></li>
+      <li id="r-schollhorn2023">Schöllhorn I, Stefani O, Lucas RJ, Spitschan M, Slawik HC, Cajochen C. Melanopic irradiance defines the impact of evening display light on sleep latency, melatonin and alertness. <i>Communications Biology</i> 2023;6:228. <a href="https://doi.org/10.1038/s42003-023-04598-4">doi:10.1038/s42003-023-04598-4</a></li>
+      <li id="r-nagare2019">Nagare R, Plitnick B, Figueiro MG. Does the iPad Night Shift mode reduce melatonin suppression? <i>Lighting Research &amp; Technology</i> 2019;51(3):373–383. <a href="https://doi.org/10.1177/1477153517748189">doi:10.1177/1477153517748189</a></li>
+      <li id="r-duraccio2021">Duraccio KM, Zaugg KK, Blackburn RC, Jensen CD. Does iPhone night shift mitigate negative effects of smartphone use on sleep outcomes in emerging adults? <i>Sleep Health</i> 2021;7(4):478–484. <a href="https://doi.org/10.1016/j.sleh.2021.03.005">doi:10.1016/j.sleh.2021.03.005</a></li>
+      <li id="r-green2017">Green A, Cohen-Zion M, Haim A, Dagan Y. Evening light exposure to computer screens disrupts human sleep, biological rhythms, and attention abilities. <i>Chronobiology International</i> 2017;34(7):855–865. <a href="https://doi.org/10.1080/07420528.2017.1324878">doi:10.1080/07420528.2017.1324878</a></li>
+      <li id="r-gringras2015">Gringras P, Middleton B, Skene DJ, Revell VL. Bigger, brighter, bluer-better? Current light-emitting devices – adverse sleep properties and preventative strategies. <i>Frontiers in Public Health</i> 2015;3:233. <a href="https://doi.org/10.3389/fpubh.2015.00233">doi:10.3389/fpubh.2015.00233</a></li>
+      <li id="r-hebert2002">Hébert M, Martin SK, Lee C, Eastman CI. The effects of prior light history on the suppression of melatonin by light in humans. <i>Journal of Pineal Research</i> 2002;33(4):198–203. <a href="https://doi.org/10.1034/j.1600-079X.2002.01885.x">doi:10.1034/j.1600-079X.2002.01885.x</a></li>
+      <li id="r-rangtell2016">Rångtell FH, Ekstrand E, Rapp L, et al. Two hours of evening reading on a self-luminous tablet vs. reading a physical book does not alter sleep after daytime bright light exposure. <i>Sleep Medicine</i> 2016;23:111–118. <a href="https://doi.org/10.1016/j.sleep.2016.06.016">doi:10.1016/j.sleep.2016.06.016</a></li>
+      <li id="r-choi2016">Choi K, Suk HJ. Assessment of white for displays under dark- and chromatic-adapted conditions. <i>Optics Express</i> 2016;24(25):28945. <a href="https://doi.org/10.1364/OE.24.028945">doi:10.1364/OE.24.028945</a></li>
+      <li id="r-li2026">Li Z, Liu Y, Zhu Y, Ye Q, Luo MR. Comparative study of visual comfort and neutral white perception on displays under varying ambient lighting conditions. <i>Optics Express</i> 2026;34(15):27138. <a href="https://doi.org/10.1364/OE.602979">doi:10.1364/OE.602979</a></li>
+      <li id="r-figueiro2009">Figueiro MG, Bierman A, Plitnick B, Rea MS. Preliminary evidence that both blue and red light can induce alertness at night. <i>BMC Neuroscience</i> 2009;10:105. <a href="https://doi.org/10.1186/1471-2202-10-105">doi:10.1186/1471-2202-10-105</a></li>
+      <li id="r-homien2014">Ho Mien I, Chua ECP, Lau P, et al. Effects of exposure to intermittent versus continuous red light on human circadian rhythms, melatonin suppression, and pupillary constriction. <i>PLoS ONE</i> 2014;9(5):e96532. <a href="https://doi.org/10.1371/journal.pone.0096532">doi:10.1371/journal.pone.0096532</a></li>
+      <li id="r-sahin2013">Sahin L, Figueiro MG. Alerting effects of short-wavelength (blue) and long-wavelength (red) lights in the afternoon. <i>Physiology &amp; Behavior</i> 2013;116–117:1–7. <a href="https://doi.org/10.1016/j.physbeh.2013.03.014">doi:10.1016/j.physbeh.2013.03.014</a></li>
+      <li id="r-mayr2010">Mayr S, Buchner A. After-effects of TFT-LCD display polarity and display colour on the detection of low-contrast objects. <i>Ergonomics</i> 2010;53(7):914–925. <a href="https://doi.org/10.1080/00140139.2010.484508">doi:10.1080/00140139.2010.484508</a></li>
+      <li id="r-blume2022">Blume C, Niedernhuber M, Spitschan M, et al. Melatonin suppression does not automatically alter sleepiness, vigilance, sensory processing, or sleep. <i>Sleep</i> 2022;45(11):zsac199. <a href="https://doi.org/10.1093/sleep/zsac199">doi:10.1093/sleep/zsac199</a></li>
+      <li id="r-shechter2020">Shechter A, Quispe KA, Mizhquiri Barbecho JS, et al. Interventions to reduce short-wavelength ("blue") light exposure at night and their effects on sleep: a systematic review and meta-analysis. <i>Sleep Advances</i> 2020;1(1):zpaa002. <a href="https://doi.org/10.1093/sleepadvances/zpaa002">doi:10.1093/sleepadvances/zpaa002</a></li>
+      <li id="r-singh2023">Singh S, Keller PR, Busija L, et al. Blue-light filtering spectacle lenses for visual performance, sleep, and macular health in adults. <i>Cochrane Database of Systematic Reviews</i> 2023;8:CD013244. <a href="https://doi.org/10.1002/14651858.CD013244.pub2">doi:10.1002/14651858.CD013244.pub2</a></li>
+      <li id="r-palavets2019">Palavets T, Rosenfield M. Blue-blocking filters and digital eyestrain. <i>Optometry and Vision Science</i> 2019;96(1):48–54. <a href="https://doi.org/10.1097/OPX.0000000000001318">doi:10.1097/OPX.0000000000001318</a></li>
+      <li id="r-vera2022">Vera J, Redondo B, Ortega-Sanchez A, et al. Blue-blocking filters do not alleviate signs and symptoms of digital eye strain. <i>Clinical and Experimental Optometry</i> 2023;106(1):85–90. <a href="https://doi.org/10.1080/08164622.2021.2018914">doi:10.1080/08164622.2021.2018914</a></li>
+      <li id="r-aao">American Academy of Ophthalmology. <a href="https://www.aao.org/eye-health/tips-prevention/should-you-be-worried-about-blue-light">Should you be worried about blue light?</a> (2021) and <a href="https://www.aao.org/eye-health/tips-prevention/computer-usage">Computers, digital devices, and eye strain</a> (2024).</li>
+      <li id="r-ohagan2016">O'Hagan JB, Khazova M, Price LLA. Low-energy light bulbs, computers, tablets and the blue light hazard. <i>Eye</i> 2016;30(2):230–233. <a href="https://doi.org/10.1038/eye.2015.261">doi:10.1038/eye.2015.261</a></li>
+      <li id="r-wilkins1989">Wilkins AJ, Nimmo-Smith I, Slater AI, Bedocs L. Fluorescent lighting, headaches and eyestrain. <i>Lighting Research &amp; Technology</i> 1989;21(1):11–18. <a href="https://doi.org/10.1177/096032718902100102">doi:10.1177/096032718902100102</a></li>
+      <li id="r-roberts2013">Roberts JE, Wilkins AJ. Flicker can be perceived during saccades at frequencies in excess of 1 kHz. <i>Lighting Research &amp; Technology</i> 2013;45(1):124–132. <a href="https://doi.org/10.1177/1477153512436367">doi:10.1177/1477153512436367</a></li>
+      <li id="r-brown2020">Brown E, Foulsham T, Lee CS, Wilkins A. Visibility of temporal light artefact from flicker at 11 kHz. <i>Lighting Research &amp; Technology</i> 2020;52(3):371–376. <a href="https://doi.org/10.1177/1477153519852391">doi:10.1177/1477153519852391</a></li>
+      <li id="r-wu2023">Wu Z, Wang L, Tu Y, et al. Effect of PWM dimming frequency of OLED smartphones on visual fatigue. <i>SID Symposium Digest of Technical Papers</i> 2023;54(S1):379–382. <a href="https://doi.org/10.1002/sdtp.16308">doi:10.1002/sdtp.16308</a></li>
+    </ol>
+    <p class="measure small">Something wrong or missing? <a href="https://github.com/adamcooper/awning-releases/issues">Tell us on GitHub</a>.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Awning is free. It's based on <a href="https://github.com/azakapro/dimit">Dimit</a> by Azizullo Temirov, under the MIT licence. Nothing on this page is medical advice.</p>
+    <nav aria-label="Footer">
+      <a href="./">Awning home</a>
+      <a href="https://github.com/adamcooper/awning-releases/issues">Report a bug</a>
+      <a href="https://github.com/adamcooper/awning-releases/releases">All releases</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
