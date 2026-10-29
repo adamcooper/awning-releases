@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Awning: warm and dim your Mac's screen</title>
 <meta name="description" content="A free menu-bar app for macOS. Warm your screen all the way to red, dim it below the brightness keys, and keep the backlight from flickering.">
-<meta name="theme-color" content="#EAF0F4">
+<meta name="theme-color" content="#EDEFF2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151A27" media="(prefers-color-scheme: dark)">
 <meta property="og:title" content="Awning">
 <meta property="og:description" content="Warm your Mac's screen all the way to red. Dim it below the brightness keys. Keep the backlight from flickering.">
 <meta property="og:url" content="https://awning.forged.run/">
@@ -35,137 +36,155 @@
 <style>
   :root {
     color-scheme: light dark;
-    --daylight: #EAF0F4; --ink: #1A2230; --slate: #566273;
-    --ember: #C9301E; --amber: #F2A541; --dusk: #1F2438;
-    --bg: var(--daylight); --fg: var(--ink); --muted: var(--slate);
-    --rule: #C9D3DB; --panel: #FFFFFF;
-    --head: "Avenir Next Condensed", "Avenir Next", "Arial Narrow", system-ui, sans-serif;
+    --ember: #E8532B; --amber: #F2A541;
+    --bg: #EDEFF2; --fg: #141925; --muted: #586070; --faint: #8A919E;
+    --rule: #D3D8DF; --panel: #F8F9FB; --focus: #B8401F;
+    --glow: rgba(232, 83, 43, .13); --glow-soft: rgba(242, 165, 65, .07); --under: rgba(232, 83, 43, .22);
+    --head: "Iowan Old Style", Charter, Georgia, serif;
     --body: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: var(--dusk); --fg: #E6EAF0; --muted: #A2ABBA; --rule: #363C55; --panel: #2A3049; }
+    :root { --bg: #151A27; --fg: #E7E9EE; --muted: #9AA1AE; --faint: #6E7584;
+      --rule: #262D3E; --panel: #1A2030; --focus: var(--amber);
+      --glow: rgba(232, 83, 43, .22); --glow-soft: rgba(242, 165, 65, .06); --under: #4A2420; }
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; background: var(--bg); color: var(--fg);
     font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
-  a { color: inherit; text-underline-offset: .18em; }
-  a:hover { color: var(--ember); }
-  :focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
-  h1, h2, h3 { font-family: var(--head); font-stretch: condensed; font-weight: 600; line-height: 1.08; margin: 0; }
-  h1 { font-size: clamp(42px, 7vw, 76px); letter-spacing: -.01em; }
-  h2 { font-size: clamp(30px, 4.4vw, 44px); margin-bottom: 18px; }
-  h3 { font-size: 23px; margin-bottom: 6px; }
+  a { color: inherit; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  a:hover { color: var(--focus); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+  h1, h2 { font-family: var(--head); font-weight: 400; margin: 0; }
+  h1 { font-size: clamp(42px, 5.8vw, 66px); line-height: 1.02; letter-spacing: -.018em; text-wrap: balance; }
+  h2 { font-size: clamp(30px, 3.6vw, 40px); line-height: 1.1; letter-spacing: -.01em; margin-bottom: 18px; text-wrap: balance; }
+  h3 { font: 600 17px/1.35 var(--body); margin: 0 0 6px; }
   p { margin: 0 0 14px; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-  .measure { max-width: 66ch; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  .measure { max-width: 62ch; }
+  .muted, .small { color: var(--muted); }
+  .small { font-size: 15px; }
 
-  /* The valance: awning stripes with a scalloped lower edge. */
-  .valance { height: 34px;
-    background: repeating-linear-gradient(90deg, var(--ember) 0 28px, var(--daylight) 28px 56px);
-    -webkit-mask: linear-gradient(#000 0 20px, transparent 0) top / 100% 100% no-repeat,
-                  radial-gradient(circle 14px at 14px 20px, #000 96%, transparent) 0 0 / 28px 34px repeat-x;
-            mask: linear-gradient(#000 0 20px, transparent 0) top / 100% 100% no-repeat,
-                  radial-gradient(circle 14px at 14px 20px, #000 96%, transparent) 0 0 / 28px 34px repeat-x; }
-  @media (prefers-color-scheme: dark) {
-    .valance { background: repeating-linear-gradient(90deg, var(--ember) 0 28px, #E6EAF0 28px 56px); }
-  }
-  header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 0; }
-  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none;
-    font: 600 26px/1 var(--head); font-stretch: condensed; }
-  .brand img { width: 30px; height: 30px; }
-  .toplink { font-weight: 600; font-size: 15px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0 0; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 600 18px/1 var(--body); }
+  .brand img { width: 28px; height: 28px; }
+  .toplink { font-weight: 500; font-size: 15px; color: var(--muted); }
 
-  /* Hero */
-  .hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; padding: 56px 0 72px; }
-  @media (min-width: 920px) { .hero { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: center; } }
-  .lead { font-size: 20px; color: var(--muted); margin: 22px 0 30px; max-width: 34ch; }
+  /* The hero is the canopy and ends on the horizon: the sunset line from
+     the app icon, with the evening glow just above it. */
+  .sky { background: linear-gradient(to bottom, transparent 50%, var(--glow-soft) 78%, var(--glow)); }
+  .horizon { height: 36px; background: linear-gradient(var(--ember) 0 2px, var(--under) 2px, var(--bg) 36px); }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 64px 0 80px; }
+  @media (min-width: 940px) { .hero { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; } }
+  .lead { font-size: 19px; color: var(--muted); margin: 26px 0 34px; max-width: 36ch; }
   .cta-row { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; }
-  .cta { display: inline-block; background: var(--ember); color: #fff; text-decoration: none;
-    font: 600 18px/1 var(--body); padding: 17px 28px; border-radius: 12px; }
-  .cta:hover { color: #fff; background: #B02716; }
+  .cta { display: inline-block; background: var(--fg); color: var(--bg); text-decoration: none;
+    font: 600 16px/1 var(--body); padding: 15px 24px; border-radius: 6px; }
+  .cta:hover { color: var(--bg); opacity: .88; }
   .req { font-size: 15px; color: var(--muted); }
-  .soon { display: inline-block; margin-top: 22px; font-size: 14px; font-weight: 600;
-    padding: 6px 13px; border: 1.5px solid var(--rule); border-radius: 99px; color: var(--muted); }
+  .soon { display: block; margin-top: 20px; font-size: 15px; color: var(--faint); }
 
-  /* The demo: a mock screen under a multiply layer, plus the app's controls. */
-  .demo { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: stretch; }
-  .screen { position: relative; isolation: isolate; border-radius: 14px; overflow: hidden;
-    border: 9px solid #12151E; aspect-ratio: 4 / 3; background: #fff; color: #1A2230; }
-  .scene { position: absolute; inset: 0;
-    background:
-      radial-gradient(circle at 74% 64%, #FFE7A8 0 7%, #FFB04A 7.5% 9%, transparent 9.5%),
-      linear-gradient(#9CC6EE, #D3E6F6 58%, #F7D3A4 70%);
-  }
-  .hills { position: absolute; left: 0; right: 0; bottom: 0; height: 34%;
-    background: radial-gradient(120% 90% at 20% 100%, #2E8A4C 60%, transparent 61%),
-                radial-gradient(110% 80% at 85% 100%, #47A65E 60%, transparent 61%); }
-  .doc { position: absolute; left: 7%; top: 9%; width: 60%; background: #fff; border-radius: 8px;
-    padding: 14px 16px 16px; box-shadow: 0 6px 18px rgba(18, 21, 30, .25); font-size: 12px; line-height: 1.45; }
-  .doc b { display: block; font: 600 17px/1.15 var(--head); font-stretch: condensed; margin-bottom: 6px; }
-  .doc p { margin: 0 0 8px; color: #3D4757; }
-  .swatches { display: flex; gap: 5px; }
-  .swatches i { flex: 1; height: 14px; border-radius: 3px; }
-  .tint { position: absolute; inset: 0; mix-blend-mode: multiply; pointer-events: none; background: #fff; }
-  .shot { position: absolute; right: -6px; bottom: -14px; width: 34%; background: #fff; padding: 6px 6px 4px;
-    border-radius: 6px; box-shadow: 0 8px 22px rgba(18, 21, 30, .35); transform: rotate(3deg); z-index: 2; }
-  .shot .mini { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 3px; }
-  .shot .mini .doc { font-size: 4px; padding: 4px 5px; box-shadow: none; }
-  .shot .mini .doc b { font-size: 6px; margin-bottom: 2px; }
-  .shot .mini .doc p { margin-bottom: 2px; }
-  .shot .mini .swatches i { height: 4px; }
-  .shot span { display: block; font-size: 11px; color: #3D4757; padding: 4px 2px 0; line-height: 1.3; }
+  /* The demo: a mock screen under a multiply layer, the app's controls in a
+     strip below it, like a monitor on a desk. */
+  .demo { display: grid; gap: 0; }
   .screen-wrap { position: relative; }
+  .screen { position: relative; isolation: isolate; border-radius: 10px 10px 0 0; overflow: hidden;
+    border: 7px solid #06080D; border-bottom-width: 0; aspect-ratio: 16 / 10; background: #fff; color: #1A2230; }
+  .menubar { position: absolute; left: 0; right: 0; top: 0; height: 4.5%; background: rgba(240, 243, 247, .82);
+    display: flex; justify-content: flex-end; align-items: center; gap: 1.6%; padding: 0 2.4%; z-index: 1; }
+  .menubar i { width: 2.2%; aspect-ratio: 1; border-radius: 2px; background: #59606C; }
+  .menubar i:last-child { width: 7%; aspect-ratio: auto; height: 34%; background: #9AA0AA; border-radius: 1px; }
+  .scene { position: absolute; inset: 0; background: linear-gradient(#7F9BB8, #BFD0DF 60%, #E3E9EE); }
+  .hills { position: absolute; left: 0; right: 0; bottom: 0; height: 40%;
+    background: linear-gradient(172deg, transparent 40%, #5D7187 40.4%),
+                linear-gradient(194deg, transparent 30%, #3F4F63 30.4%); }
+  .doc { position: absolute; left: 7%; top: 13%; width: 52%; background: #fff; border-radius: 6px;
+    padding: 14px 16px 16px; box-shadow: 0 10px 30px rgba(18, 21, 30, .25); font-size: 12px; line-height: 1.45; }
+  .doc b { display: block; font: 600 15px/1.2 var(--body); margin-bottom: 6px; }
+  .doc p { margin: 0 0 10px; color: #3D4757; }
+  .swatches { display: flex; gap: 4px; }
+  .swatches i { flex: 1; height: 12px; border-radius: 2px; }
+  .tint { position: absolute; inset: 0; mix-blend-mode: multiply; pointer-events: none; background: #fff; z-index: 2; }
+  .shot { position: absolute; right: 4%; top: 13%; width: 27%; z-index: 3; }
+  .shot .mini { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 3px;
+    outline: 1px solid rgba(255, 255, 255, .9); box-shadow: 0 10px 26px rgba(6, 8, 13, .45); }
+  .shot .mini .doc { font-size: 3.5px; padding: 3px 4px; box-shadow: none; border-radius: 2px; }
+  .shot .mini .doc b { font-size: 5px; margin-bottom: 1px; }
+  .shot .mini .doc p { margin-bottom: 2px; }
+  .shot .mini .swatches i { height: 3px; }
+  .shot span { display: block; margin-top: 7px; font-size: 11px; line-height: 1.3; color: #fff;
+    text-shadow: 0 1px 3px rgba(6, 8, 13, .7); }
 
-  .controls { display: flex; flex-direction: column; gap: 12px; width: 168px; padding: 14px;
-    border-radius: 16px; background: var(--panel); border: 1px solid var(--rule); }
-  .faders { display: flex; justify-content: space-around; }
-  .fader { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .fader label { font-size: 12px; font-weight: 600; color: var(--muted); }
-  .fader output { font: 600 15px/1 var(--body); font-variant-numeric: tabular-nums; }
-  .fader input { writing-mode: vertical-lr; direction: rtl; height: 150px; width: 28px; margin: 0;
-    accent-color: var(--ember); cursor: pointer; }
-  .presets { display: flex; gap: 4px; }
-  .presets button, .power { font: 600 11px/1 var(--body); border: 1px solid var(--rule); background: none;
-    color: var(--fg); border-radius: 7px; padding: 8px 0; flex: 1; cursor: pointer; }
-  .presets button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-  .power { font-size: 14px; padding: 11px 0; background: var(--ember); color: #fff; border-color: var(--ember); }
-  .power[aria-pressed="false"] { background: none; color: var(--fg); border-color: var(--rule); }
-  .demo-note { grid-column: 1 / -1; font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 28px; padding: 18px 20px 20px;
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 0 0 10px 10px; }
+  .fader-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .fader label { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .fader output { font: 500 15px/1 var(--body); font-variant-numeric: tabular-nums; }
+  .fader input { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 18px;
+    margin: 0; background: none; cursor: pointer; }
+  .fader input::-webkit-slider-runnable-track { height: 3px; border-radius: 2px; background: var(--track);
+    box-shadow: 0 0 0 1px var(--rule); }
+  .fader input::-moz-range-track { height: 3px; border-radius: 2px; background: var(--track); }
+  .fader input::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; margin-top: -6px;
+    border-radius: 50%; background: var(--fg); border: 3px solid var(--panel); box-shadow: 0 0 0 1px var(--fg); }
+  .fader input::-moz-range-thumb { width: 9px; height: 9px; border-radius: 50%; background: var(--fg);
+    border: 3px solid var(--panel); box-shadow: 0 0 0 1px var(--fg); }
+  /* Each track shows the range it controls: red at 0K to white at 6500K. */
+  #warmth { --track: linear-gradient(90deg, #D8301C, #F08A3C 30%, #FFD9A6 62%, #FFFFFF); }
+  #bright { --track: linear-gradient(90deg, #2A2F3A, #FFFFFF); }
+  .controls-row { grid-column: 1 / -1; display: flex; gap: 12px; }
+  .presets { display: flex; flex: 1; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+  .presets button { flex: 1; font: 600 11px/1 var(--body); letter-spacing: .06em; padding: 10px 0;
+    border: 0; border-left: 1px solid var(--rule); background: none; color: var(--muted); cursor: pointer; }
+  .presets button:first-child { border-left: 0; }
+  .presets button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+  .power { width: 88px; font: 600 12px/1 var(--body); letter-spacing: .06em; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--fg); background: var(--fg); color: var(--bg); }
+  .power[aria-pressed="false"] { background: none; color: var(--muted); border-color: var(--rule); }
+  .demo-note { font-size: 14px; color: var(--muted); margin: 14px 0 0; max-width: 64ch; }
   @media (max-width: 560px) {
-    .demo { grid-template-columns: minmax(0, 1fr); }
-    .controls { width: auto; }
+    .controls { grid-template-columns: minmax(0, 1fr); }
+    .shot span { display: none; }
   }
 
-  /* Sections */
-  section.band { padding: 80px 0; border-top: 1px solid var(--rule); }
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 36px 56px; margin-top: 38px; }
-  .features p { color: var(--muted); margin: 0; }
-  kbd { font: 600 14px/1 var(--body); padding: 2px 6px; border: 1px solid var(--rule); border-radius: 5px; }
+  /* Sections: heading in a narrow left column, content to the right. */
+  section.band { padding: 96px 0; border-top: 1px solid var(--rule); }
+  section.band.first { border-top: 0; padding-top: 56px; }
+  @media (min-width: 940px) {
+    .split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 56px; }
+    .split > h2 { margin: 0; }
+  }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px 48px; margin-top: 44px; }
+  .features > div { border-top: 1px solid var(--fg); padding-top: 16px; }
+  .features p { color: var(--muted); margin: 0; font-size: 16px; }
+  kbd { font: 600 14px/1 var(--body); padding: 2px 6px; border: 1px solid var(--rule); border-radius: 4px; }
 
-  .flicker { background: var(--dusk); color: #E6EAF0; border-top: 0; }
-  .flicker .muted { color: #A2ABBA; }
-  .flicker a:hover { color: var(--amber); }
-  .waves { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; margin: 36px 0 28px; }
+  /* The flicker band stays dark in both modes. */
+  .flicker { --bg: #0F131D; --fg: #E7E9EE; --muted: #9AA1AE; --rule: #232A3A; --focus: var(--amber);
+    background: var(--bg); color: var(--fg); border-top: 0; }
+  .waves { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px; margin: 40px 0 32px; }
   .waves figure { margin: 0; }
   .waves svg { width: 100%; height: auto; display: block; }
-  .waves figcaption { font-size: 15px; color: #A2ABBA; margin-top: 10px; }
-  .waves figcaption b { color: #E6EAF0; display: block; font-size: 17px; }
+  .waves figcaption { font-size: 15px; color: var(--muted); margin-top: 12px; }
+  .waves figcaption b { color: var(--fg); display: block; font-size: 16px; font-weight: 600; }
 
-  .privacy h2 { font-size: clamp(36px, 6vw, 60px); max-width: 16ch; }
+  .privacy { padding: 120px 0; }
+  .privacy h2 { font-size: clamp(40px, 6.4vw, 76px); line-height: 1.02; letter-spacing: -.018em; max-width: 14ch; margin-bottom: 28px; }
   .privacy .measure p { font-size: 19px; color: var(--muted); }
 
-  .platforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; margin-top: 34px; }
-  .platform { padding: 26px 26px 24px; border: 1px solid var(--rule); border-radius: 16px; background: var(--panel); }
-  .platform h3 { font-size: 30px; }
-  .platform .req { margin: 4px 0 18px; display: block; }
-  .platform.later { background: none; border-style: dashed; }
-  .small { font-size: 15px; color: var(--muted); }
+  .platform { border-top: 1px solid var(--fg); padding-top: 20px; max-width: 560px; }
+  .platform h3 { font: 400 30px/1.1 var(--head); margin: 0; }
+  .platform .req { margin: 6px 0 22px; display: block; }
+  .platform .soon { margin-top: 28px; }
 
-  details { border-bottom: 1px solid var(--rule); padding: 16px 0; max-width: 72ch; }
+  details { border-bottom: 1px solid var(--rule); }
   details:first-of-type { border-top: 1px solid var(--rule); }
-  summary { cursor: pointer; font-weight: 600; font-size: 18px; list-style-position: outside; }
-  details p { color: var(--muted); margin: 10px 0 0; }
+  summary { cursor: pointer; font-weight: 600; font-size: 17px; padding: 18px 0; list-style: none;
+    display: flex; justify-content: space-between; gap: 24px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-weight: 400; color: var(--muted); }
+  details[open] summary::after { content: "\2212"; }
+  details p { color: var(--muted); margin: -6px 0 0; padding-bottom: 20px; max-width: 62ch; }
 
   footer { padding: 40px 0 56px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--muted); }
   footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 8px; }
@@ -174,7 +193,7 @@
 </style>
 </head>
 <body>
-<div class="valance" aria-hidden="true"></div>
+<div class="sky">
 <div class="wrap">
   <header class="top">
     <a class="brand" href="./"><img src="images/icon.png" alt="" width="30" height="30">Awning</a>
@@ -196,6 +215,7 @@
       <div class="demo" id="demo">
         <div class="screen-wrap">
           <div class="screen" aria-hidden="true">
+            <div class="menubar"><i></i><i></i><i></i></div>
             <div class="scene"><div class="hills"></div></div>
             <div class="doc">
               <b>Tonight's plan</b>
@@ -213,37 +233,37 @@
                 <div class="swatches"><i style="background:#2F6FDE"></i><i style="background:#2FA65A"></i><i style="background:#F2C230"></i><i style="background:#E0453A"></i></div>
               </div>
             </div>
-            <span>A screenshot taken now</span>
+            <span>A screenshot, taken now</span>
           </div>
         </div>
 
         <div class="controls" role="group" aria-label="Try Awning">
-          <div class="faders">
-            <div class="fader">
-              <output id="kOut" for="warmth">6500K</output>
-              <input id="warmth" type="range" min="0" max="6500" step="50" value="6500" aria-label="Warmth">
-              <label for="warmth">Warmth</label>
-            </div>
-            <div class="fader">
-              <output id="bOut" for="bright">100%</output>
-              <input id="bright" type="range" min="10" max="100" step="1" value="100" aria-label="Brightness">
-              <label for="bright">Brightness</label>
-            </div>
+          <div class="fader">
+            <div class="fader-head"><label for="warmth">Warmth</label><output id="kOut" for="warmth">6500K</output></div>
+            <input id="warmth" type="range" min="0" max="6500" step="50" value="6500">
           </div>
-          <div class="presets">
-            <button type="button" data-k="4000" data-b="100" aria-pressed="false">DAY</button>
-            <button type="button" data-k="2700" data-b="80" aria-pressed="false">EVENING</button>
-            <button type="button" data-k="0" data-b="40" aria-pressed="false">NIGHT</button>
+          <div class="fader">
+            <div class="fader-head"><label for="bright">Brightness</label><output id="bOut" for="bright">100%</output></div>
+            <input id="bright" type="range" min="10" max="100" step="1" value="100">
           </div>
-          <button type="button" class="power" id="power" aria-pressed="true">ON</button>
+          <div class="controls-row">
+            <div class="presets" role="group" aria-label="Presets">
+              <button type="button" data-k="4000" data-b="100" aria-pressed="false">DAY</button>
+              <button type="button" data-k="2700" data-b="80" aria-pressed="false">EVENING</button>
+              <button type="button" data-k="0" data-b="40" aria-pressed="false">NIGHT</button>
+            </div>
+            <button type="button" class="power" id="power" aria-pressed="true">ON</button>
+          </div>
         </div>
-        <p class="demo-note">Try it: this is the app's own warmth curve, applied to the picture on the left. Your real screen changes the same way, and your screenshots stay normal.</p>
+        <p class="demo-note">Try it: this is the app's own warmth curve, applied to the picture above. Your real screen changes the same way, and your screenshots stay normal.</p>
       </div>
     </section>
   </main>
 </div>
+</div>
+<div class="horizon" aria-hidden="true"></div>
 
-<section class="band" aria-labelledby="what">
+<section class="band first" aria-labelledby="what">
   <div class="wrap">
     <h2 id="what">Two sliders, three presets, one button</h2>
     <p class="measure small">Everything else lives behind a settings gear.</p>
@@ -278,10 +298,12 @@
 
 <section class="band" aria-labelledby="rs">
   <div class="wrap">
+    <div class="split">
     <h2 id="rs">Why day, evening and night</h2>
     <div class="measure">
       <p>Studies show that what matters in the evening is how much blue-green light reaches your eyes. Warming the screen removes only about half of it, so Awning's evening and night presets dim the screen too. During the day there's no reason to warm your screen at all. The research also has limits: it hasn't shown that warm screens improve sleep in everyday life, or that they reduce eye strain.</p>
       <p><a href="research.html"><b>Read what the research says</b></a>, with every study linked.</p>
+    </div>
     </div>
   </div>
 </section>
@@ -295,15 +317,15 @@
     <div class="waves">
       <figure>
         <svg viewBox="0 0 300 90" role="img" aria-label="A backlight pulsing on and off">
-          <line x1="0" y1="80" x2="300" y2="80" stroke="#4A5170" stroke-width="1"/>
-          <path d="M0 80 H10 V14 H30 V80 H60 V14 H80 V80 H110 V14 H130 V80 H160 V14 H180 V80 H210 V14 H230 V80 H260 V14 H280 V80 H300" fill="none" stroke="#F2A541" stroke-width="3" stroke-linejoin="round"/>
+          <line x1="0" y1="80" x2="300" y2="80" stroke="#2E3548" stroke-width="1"/>
+          <path d="M0 80 H10 V14 H30 V80 H60 V14 H80 V80 H110 V14 H130 V80 H160 V14 H180 V80 H210 V14 H230 V80 H260 V14 H280 V80 H300" fill="none" stroke="#F2A541" stroke-width="2" stroke-linejoin="round"/>
         </svg>
         <figcaption><b>Dimmed with the brightness keys</b>The backlight pulses, and is fully off between pulses.</figcaption>
       </figure>
       <figure>
         <svg viewBox="0 0 300 90" role="img" aria-label="A backlight holding steady">
-          <line x1="0" y1="80" x2="300" y2="80" stroke="#4A5170" stroke-width="1"/>
-          <path d="M0 14 H300" fill="none" stroke="#F2A541" stroke-width="3"/>
+          <line x1="0" y1="80" x2="300" y2="80" stroke="#2E3548" stroke-width="1"/>
+          <path d="M0 14 H300" fill="none" stroke="#F2A541" stroke-width="2"/>
         </svg>
         <figcaption><b>Dimmed with flicker-free mode</b>The backlight stays at 100%, and Awning darkens the picture instead.</figcaption>
       </figure>
@@ -325,17 +347,14 @@
 
 <section class="band" id="get" aria-labelledby="gt">
   <div class="wrap">
-    <h2 id="gt">Get Awning</h2>
-    <div class="platforms">
+    <div class="split">
+      <h2 id="gt">Get Awning</h2>
       <div class="platform">
         <h3>Mac</h3>
         <span class="req">macOS 13 Ventura or later, Apple silicon or Intel. Free.</span>
         <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.6.1/Awning-0.6.1.dmg">Download for Mac</a>
-        <p class="small" style="margin-top:20px">Open the download, drag Awning to Applications, then open it. It's signed and notarised by Apple, so it opens like any other app. Look for it in the menu bar at the top of the screen.</p>
-      </div>
-      <div class="platform later">
-        <h3>Android</h3>
-        <span class="soon" style="margin-top:6px">Coming soon</span>
+        <p class="small" style="margin-top:22px">Open the download, drag Awning to Applications, then open it. It's signed and notarised by Apple, so it opens like any other app. Look for it in the menu bar at the top of the screen.</p>
+        <span class="soon">Android is coming soon.</span>
       </div>
     </div>
   </div>
@@ -343,7 +362,9 @@
 
 <section class="band" aria-labelledby="faq">
   <div class="wrap">
+    <div class="split">
     <h2 id="faq">Questions</h2>
+    <div>
     <details>
       <summary>Is it really free?</summary>
       <p>Yes. There's no trial, no licence key and no paid tier. Every copy does everything.</p>
@@ -368,6 +389,8 @@
       <summary>What happens when I quit?</summary>
       <p>Your screen goes straight back to its normal colours, and so does the backlight. If Awning ever crashes, opening it again restores the colours.</p>
     </details>
+    </div>
+    </div>
   </div>
 </section>
 
