@@ -6,6 +6,15 @@
         <description>Signed updates for Awning.</description>
         <language>en</language>
         <item>
+            <title>0.7</title>
+            <pubDate>Sat, 31 Oct 2026 01:31:27 -0700</pubDate>
+            <link>https://github.com/adamcooper/awning-releases/releases/tag/v0.7</link>
+            <sparkle:version>202610310828</sparkle:version>
+            <sparkle:shortVersionString>0.7</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/adamcooper/awning-releases/releases/download/v0.7/Awning-0.7.zip" length="2479267" type="application/octet-stream" sparkle:edSignature="SkJZRFsM8VpS3JycpJa5+jG1AFfn6Iv3n7UVGUBLkJ2gFNYr5eeGBuNNwkRTh6NR30jOpN5Al/qCaf6wG5nsAA=="/>
+        </item>
+        <item>
             <title>0.6.1</title>
             <pubDate>Mon, 26 Oct 2026 09:40:02 -0700</pubDate>
             <link>https://github.com/adamcooper/awning-releases/releases/tag/v0.6.1</link>

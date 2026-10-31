@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About Awning · Awning</title>
+<meta name="description" content="Who makes Awning, and the app it grew out of.">
+<meta name="theme-color" content="#EDEFF2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151A27" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="About Awning">
+<meta property="og:description" content="Who makes Awning, and the app it grew out of.">
+<meta property="og:url" content="https://awning.forged.run/about.html">
+<meta property="og:image" content="https://awning.forged.run/images/social-preview.png">
+<link rel="canonical" href="https://awning.forged.run/about.html">
+<link rel="icon" href="images/icon.png">
+<!--
+  Credits and licence, moved off the landing page on 2026-10-30. Keep
+  Azizullo Temirov's credit for Dimit here (CLAUDE.md, LICENSE).
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --ember: #E8532B; --amber: #F2A541;
+    --bg: #EDEFF2; --fg: #141925; --muted: #586070; --faint: #8A919E;
+    --rule: #D3D8DF; --panel: #F8F9FB; --focus: #B8401F;
+    --glow: rgba(232, 83, 43, .13); --glow-soft: rgba(242, 165, 65, .07); --under: rgba(232, 83, 43, .22);
+    --head: "Iowan Old Style", Charter, Georgia, serif;
+    --body: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151A27; --fg: #E7E9EE; --muted: #9AA1AE; --faint: #6E7584;
+      --rule: #262D3E; --panel: #1A2030; --focus: var(--amber);
+      --glow: rgba(232, 83, 43, .22); --glow-soft: rgba(242, 165, 65, .06); --under: #4A2420; }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  a:hover { color: var(--focus); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+  h1, h2 { font-family: var(--head); font-weight: 400; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(40px, 5.4vw, 60px); line-height: 1.04; letter-spacing: -.018em; }
+  h2 { font-size: clamp(28px, 3.4vw, 38px); line-height: 1.1; letter-spacing: -.01em; margin-bottom: 18px; }
+  h3 { font: 600 17px/1.35 var(--body); margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  .measure { max-width: 66ch; }
+  .muted, .small { color: var(--muted); }
+  .small { font-size: 15px; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0 0; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 600 18px/1 var(--body); }
+  .brand img { width: 28px; height: 28px; }
+  .toplink { font-weight: 500; font-size: 15px; color: var(--muted); }
+
+  /* The intro ends on the same horizon as the landing page's hero. */
+  .sky { background: linear-gradient(to bottom, transparent 55%, var(--glow-soft) 82%, var(--glow)); }
+  .horizon { height: 36px; background: linear-gradient(var(--ember) 0 2px, var(--under) 2px, var(--bg) 36px); }
+
+  .intro { padding-top: 64px; padding-bottom: 80px; }
+  .lead { font-size: 20px; color: var(--muted); margin: 20px 0 0; max-width: 52ch; }
+  section.band { padding: 88px 0; border-top: 1px solid var(--rule); }
+
+  .short { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 14px; max-width: 72ch; }
+  .short li { padding-left: 22px; position: relative; }
+  .short li::before { content: ""; position: absolute; left: 0; top: .78em; width: 10px; height: 2px;
+    background: var(--ember); }
+
+  table { border-collapse: collapse; width: 100%; max-width: 820px; margin: 18px 0 8px; font-size: 16px; }
+  th, td { text-align: left; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scroll { overflow-x: auto; }
+
+  .presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-top: 30px; }
+  .preset { padding-top: 18px; border-top: 1px solid var(--fg); }
+  .preset .chip { display: inline-block; font: 600 13px/1 var(--body); letter-spacing: .04em;
+    padding: 7px 11px; border-radius: 4px; margin-bottom: 14px; color: #1A2230; }
+  .preset p { color: var(--muted); }
+  .preset p.verdict { color: var(--fg); font-weight: 600; margin-bottom: 8px; }
+
+  .grade { display: inline-block; font: 600 12px/1 var(--body); padding: 4px 8px; border-radius: 4px;
+    border: 1px solid var(--rule); color: var(--muted); white-space: nowrap; }
+
+  .notlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 28px 48px; margin-top: 30px; }
+  .notlist p { color: var(--muted); margin: 0; }
+
+  /* The estimates band stays dark in both modes, like the flicker band on the landing page. */
+  .night { --bg: #0F131D; --fg: #E7E9EE; --muted: #9AA1AE; --rule: #232A3A; --panel: #1A2030; --focus: var(--amber);
+    background: var(--bg); color: var(--fg); border-top: 0; }
+
+  ol.refs { padding-left: 1.4em; max-width: 90ch; font-size: 15px; color: var(--muted); }
+  ol.refs li { margin-bottom: 8px; }
+  ol.refs li:target { color: var(--fg); background: color-mix(in srgb, var(--amber) 22%, transparent); }
+  a.cite { text-decoration: none; border-bottom: 1px dotted currentColor; }
+
+  footer { padding: 40px 0 56px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--muted); }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./"><img src="images/icon.png" alt="" width="28" height="28">Awning</a>
+    <a class="toplink" href="./#get">Download</a>
+  </header>
+</div>
+
+<main>
+<div class="sky">
+<div class="wrap intro">
+  <h1>About Awning</h1>
+  <p class="lead">Awning is a free Mac app that warms and dims your screen, made by Adam Cooper.</p>
+</div>
+</div>
+<div class="horizon" aria-hidden="true"></div>
+
+<section class="band" aria-labelledby="built" style="border-top:0;padding-top:56px">
+  <div class="wrap"><div class="measure">
+    <h2 id="built">How it was built</h2>
+    <p>Awning began as a copy of <a href="https://github.com/azakapro/dimit">Dimit</a>, a screen-warmth app by Azizullo Temirov, released under the MIT licence. In October 2026 it was redesigned and renamed Awning. Both authors are named in its licence.</p>
+    <p>Awning is free under the same MIT licence. There's no trial, no licence key and no paid tier.</p>
+  </div></div>
+</section>
+
+<section class="band" aria-labelledby="private">
+  <div class="wrap"><div class="measure">
+    <h2 id="private">What it doesn't do</h2>
+    <p>No account, no analytics and no tracking. Awning connects to the internet only if you turn on update checks, or choose Check for Updates yourself.</p>
+  </div></div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Awning is free.</p>
+    <nav aria-label="Footer">
+      <a href="./">Awning home</a>
+      <a href="research.html">The research</a>
+      <a href="about.html">About</a>
+      <a href="https://github.com/adamcooper/awning-releases/issues">Report a bug</a>
+      <a href="https://github.com/adamcooper/awning-releases/releases">All releases</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

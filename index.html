@@ -206,8 +206,8 @@
         <h1 id="h1">Warm your Mac's screen all the way to red.</h1>
         <p class="lead">Awning is a small menu-bar app. One slider takes the blue out of the screen, the other dims it below where the brightness keys stop. Free, with no account.</p>
         <div class="cta-row">
-          <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.6.1/Awning-0.6.1.dmg">Download for Mac</a>
-          <span class="req">macOS 13 or later, version 0.6.1</span>
+          <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.7/Awning-0.7.dmg">Download for Mac</a>
+          <span class="req">macOS 13 or later, version 0.7</span>
         </div>
         <span class="soon">Android coming soon</span>
       </div>
@@ -248,8 +248,8 @@
           </div>
           <div class="controls-row">
             <div class="presets" role="group" aria-label="Presets">
-              <button type="button" data-k="4000" data-b="100" aria-pressed="false">DAY</button>
-              <button type="button" data-k="2700" data-b="80" aria-pressed="false">EVENING</button>
+              <button type="button" data-k="5000" data-b="100" aria-pressed="false">DAY</button>
+              <button type="button" data-k="2700" data-b="55" aria-pressed="false">EVENING</button>
               <button type="button" data-k="0" data-b="40" aria-pressed="false">NIGHT</button>
             </div>
             <button type="button" class="power" id="power" aria-pressed="true">ON</button>
@@ -281,8 +281,8 @@
         <p>The colour change happens in the display's own colour tables, so screenshots, screen recordings and screen shares keep their real colours. We checked with screenshots, QuickTime and Zoom.</p>
       </div>
       <div>
-        <h3>Sunset to sunrise</h3>
-        <p>Let Awning warm up in the evening and switch itself off in the morning. Sunset is worked out on your Mac from your city, or from your location if you allow it. Fixed times work too.</p>
+        <h3>On a schedule</h3>
+        <p>Let Awning warm up in the evening and switch itself off in the morning. Sunset is worked out on your Mac from your city, or from your location if you allow it. Or pick your own time for each change.</p>
       </div>
       <div>
         <h3>Keyboard shortcuts</h3>
@@ -352,7 +352,7 @@
       <div class="platform">
         <h3>Mac</h3>
         <span class="req">macOS 13 Ventura or later, Apple silicon or Intel. Free.</span>
-        <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.6.1/Awning-0.6.1.dmg">Download for Mac</a>
+        <a class="cta" href="https://github.com/adamcooper/awning-releases/releases/download/v0.7/Awning-0.7.dmg">Download for Mac</a>
         <p class="small" style="margin-top:22px">Open the download, drag Awning to Applications, then open it. It's signed and notarised by Apple, so it opens like any other app. Look for it in the menu bar at the top of the screen.</p>
         <span class="soon">Android is coming soon.</span>
       </div>
@@ -396,9 +396,11 @@
 
 <footer>
   <div class="wrap">
-    <p>Awning is free. It's based on <a href="https://github.com/azakapro/dimit">Dimit</a> by Azizullo Temirov, under the MIT licence.</p>
+    <p>Awning is free.</p>
     <nav aria-label="Footer">
       <a href="research.html">The research</a>
+      <a href="defaults.html">Why these settings</a>
+      <a href="about.html">About</a>
       <a href="https://github.com/adamcooper/awning-releases/issues">Report a bug</a>
       <a href="https://github.com/adamcooper/awning-releases/releases">All releases</a>
     </nav>
@@ -476,7 +478,7 @@
   render();
   // The page's one unprompted motion: settle into EVENING once, so a visitor
   // sees the screen warm before touching anything.
-  setTimeout(function () { if (+warmth.value === 6500) glide(2700, 80, 1600); }, 700);
+  setTimeout(function () { if (+warmth.value === 6500) glide(2700, 55, 1600); }, 700);
 
 </script>
 </body>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Day, Evening and Night are set the way they are · Awning</title>
+<meta name="description" content="Why Awning's Day, Evening and Night settings start where they do, and how to change them.">
+<meta name="theme-color" content="#EDEFF2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151A27" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Why Day, Evening and Night are set the way they are">
+<meta property="og:description" content="Why Awning's Day, Evening and Night settings start where they do, and how to change them.">
+<meta property="og:url" content="https://awning.forged.run/defaults.html">
+<meta property="og:image" content="https://awning.forged.run/images/social-preview.png">
+<link rel="canonical" href="https://awning.forged.run/defaults.html">
+<link rel="icon" href="images/icon.png">
+<!--
+  Why the three default settings are what they are, linked from the app's
+  Settings window. Same rules as research.html: one self-contained file, no
+  framework, no web fonts, no third-party requests. Every number must match
+  Awning/Features/PresetStore.swift and the estimates in
+  docs/LIGHT_RESEARCH.md §5. No medical claims (CLAUDE.md §1.7).
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --ember: #E8532B; --amber: #F2A541;
+    --bg: #EDEFF2; --fg: #141925; --muted: #586070; --faint: #8A919E;
+    --rule: #D3D8DF; --panel: #F8F9FB; --focus: #B8401F;
+    --glow: rgba(232, 83, 43, .13); --glow-soft: rgba(242, 165, 65, .07); --under: rgba(232, 83, 43, .22);
+    --head: "Iowan Old Style", Charter, Georgia, serif;
+    --body: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151A27; --fg: #E7E9EE; --muted: #9AA1AE; --faint: #6E7584;
+      --rule: #262D3E; --panel: #1A2030; --focus: var(--amber);
+      --glow: rgba(232, 83, 43, .22); --glow-soft: rgba(242, 165, 65, .06); --under: #4A2420; }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  a:hover { color: var(--focus); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+  h1, h2 { font-family: var(--head); font-weight: 400; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(40px, 5.4vw, 60px); line-height: 1.04; letter-spacing: -.018em; }
+  h2 { font-size: clamp(28px, 3.4vw, 38px); line-height: 1.1; letter-spacing: -.01em; margin-bottom: 18px; }
+  h3 { font: 600 17px/1.35 var(--body); margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  .measure { max-width: 66ch; }
+  .muted, .small { color: var(--muted); }
+  .small { font-size: 15px; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0 0; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 600 18px/1 var(--body); }
+  .brand img { width: 28px; height: 28px; }
+  .toplink { font-weight: 500; font-size: 15px; color: var(--muted); }
+
+  /* The intro ends on the same horizon as the landing page's hero. */
+  .sky { background: linear-gradient(to bottom, transparent 55%, var(--glow-soft) 82%, var(--glow)); }
+  .horizon { height: 36px; background: linear-gradient(var(--ember) 0 2px, var(--under) 2px, var(--bg) 36px); }
+
+  .intro { padding-top: 64px; padding-bottom: 80px; }
+  .lead { font-size: 20px; color: var(--muted); margin: 20px 0 0; max-width: 52ch; }
+  section.band { padding: 88px 0; border-top: 1px solid var(--rule); }
+
+  .short { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 14px; max-width: 72ch; }
+  .short li { padding-left: 22px; position: relative; }
+  .short li::before { content: ""; position: absolute; left: 0; top: .78em; width: 10px; height: 2px;
+    background: var(--ember); }
+
+  table { border-collapse: collapse; width: 100%; max-width: 820px; margin: 18px 0 8px; font-size: 16px; }
+  th, td { text-align: left; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scroll { overflow-x: auto; }
+
+  .presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-top: 30px; }
+  .preset { padding-top: 18px; border-top: 1px solid var(--fg); }
+  .preset .chip { display: inline-block; font: 600 13px/1 var(--body); letter-spacing: .04em;
+    padding: 7px 11px; border-radius: 4px; margin-bottom: 14px; color: #1A2230; }
+  .preset p { color: var(--muted); }
+  .preset p.verdict { color: var(--fg); font-weight: 600; margin-bottom: 8px; }
+
+  .grade { display: inline-block; font: 600 12px/1 var(--body); padding: 4px 8px; border-radius: 4px;
+    border: 1px solid var(--rule); color: var(--muted); white-space: nowrap; }
+
+  .notlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 28px 48px; margin-top: 30px; }
+  .notlist p { color: var(--muted); margin: 0; }
+
+  /* The estimates band stays dark in both modes, like the flicker band on the landing page. */
+  .night { --bg: #0F131D; --fg: #E7E9EE; --muted: #9AA1AE; --rule: #232A3A; --panel: #1A2030; --focus: var(--amber);
+    background: var(--bg); color: var(--fg); border-top: 0; }
+
+  ol.refs { padding-left: 1.4em; max-width: 90ch; font-size: 15px; color: var(--muted); }
+  ol.refs li { margin-bottom: 8px; }
+  ol.refs li:target { color: var(--fg); background: color-mix(in srgb, var(--amber) 22%, transparent); }
+  a.cite { text-decoration: none; border-bottom: 1px dotted currentColor; }
+
+  footer { padding: 40px 0 56px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--muted); }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./"><img src="images/icon.png" alt="" width="28" height="28">Awning</a>
+    <a class="toplink" href="./#get">Download</a>
+  </header>
+</div>
+
+<main>
+<div class="sky">
+<div class="wrap intro">
+  <h1>Why Day, Evening and Night are set the way they are</h1>
+  <p class="lead">Awning starts you with three settings. Each is a starting point, not a rule. Here's why each one is where it is, and how to make it yours.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th scope="col">Setting</th><th scope="col">Warmth</th><th scope="col">Brightness</th><th scope="col">In short</th></tr></thead>
+      <tbody>
+        <tr><td><b>Day</b></td><td class="num">5000K</td><td class="num">100%</td><td>A slight tint. Move it to whatever looks comfortable, or turn Awning off.</td></tr>
+        <tr><td><b>Evening</b></td><td class="num">2700K</td><td class="num">55%</td><td>Warm, and noticeably dimmer.</td></tr>
+        <tr><td><b>Night</b></td><td class="num">0K</td><td class="num">40%</td><td>Red only, and dim.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+<div class="horizon" aria-hidden="true"></div>
+
+<section class="band" aria-labelledby="day" style="border-top:0;padding-top:56px">
+  <div class="wrap"><div class="measure">
+    <h2 id="day">Day: 5000K, 100%</h2>
+    <p>The research gives no reason to warm your screen during the day. Most daytime light comes from windows and room lights, not your screen, and bright days seem to make you less sensitive to light in the evening (<a href="research.html#presets">the research</a>).</p>
+    <p>Most people find a screen white of about 5,400–7,300K looks the most natural. Day starts just below that, with a slight warmth some people find softer. It's a comfort setting, nothing more.</p>
+    <p><b>Make it comfortable.</b> If Day looks too yellow, slide Warmth up until it looks right and click Save. If you'd rather have no tint at all, turn Awning off during the day. With a schedule, Awning does that for you.</p>
+    <p class="small">Day used to be 4000K. We moved it to 5000K in October 2026, because a stronger daytime tint had nothing behind it.</p>
+  </div></div>
+</section>
+
+<section class="band" aria-labelledby="evening">
+  <div class="wrap"><div class="measure">
+    <h2 id="evening">Evening: 2700K, 55%</h2>
+    <p>In the evening, what matters is how much blue-green light reaches your eyes. Warming the screen removes only about half of it. Dimming removes much more, so Evening does both.</p>
+    <p>By our estimate, a white page on a laptop at full backlight, as flicker-free mode keeps it, gives about 10 lux of that light at your eyes at 55%. That's around the level experts suggest for the evening (<a href="research.html#r-brown2022">Brown 2022</a>). Ordinary pages are darker than plain white, so most of the time it's less.</p>
+    <p><b>Make it comfortable.</b> In a dim room you may like it lower. If text is hard to read, raise Brightness a little and click Save.</p>
+    <p class="small">Evening used to be 80% brightness. By the same estimate that left about twice as much light, so we lowered it in October 2026.</p>
+  </div></div>
+</section>
+
+<section class="band" aria-labelledby="night">
+  <div class="wrap"><div class="measure">
+    <h2 id="night">Night: 0K, 40%</h2>
+    <p>At 0K only the red part of each pixel is left. Red light hardly reaches the body clock's light sensors, and in lab studies it didn't lower melatonin. It isn't completely without effect, though: it can make you more alert, so at night darker is still better (<a href="research.html#presets">the research</a>).</p>
+    <p><b>Make it comfortable.</b> Night is meant for late, in a dark room. If 40% feels too bright there, lower it and click Save.</p>
+  </div></div>
+</section>
+
+<section class="band" aria-labelledby="yours">
+  <div class="wrap"><div class="measure">
+    <h2 id="yours">Making them yours</h2>
+    <p>Pick Day, Evening or Night in the menu and move the sliders. A bar appears under the three buttons: click <b>Save</b> to keep the change, or <b>Undo</b> to go back. Settings shows what each one is set to, and <b>Reset</b> brings back the values on this page.</p>
+    <p class="small">The numbers on this page are calculations, not measurements of a real Mac (<a href="research.html#est">how we estimated them</a>). Nothing on this page is medical advice.</p>
+  </div></div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Awning is free. Nothing on this page is medical advice.</p>
+    <nav aria-label="Footer">
+      <a href="./">Awning home</a>
+      <a href="research.html">The research</a>
+      <a href="about.html">About</a>
+      <a href="https://github.com/adamcooper/awning-releases/issues">Report a bug</a>
+      <a href="https://github.com/adamcooper/awning-releases/releases">All releases</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
